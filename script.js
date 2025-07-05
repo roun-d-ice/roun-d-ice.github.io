@@ -210,12 +210,16 @@ function findAndPlaySong() {
 
     if (song) {
         currentSongDisplay.innerHTML = `<strong>${inputNumber}. ${song.artist}</strong> - ${song.title}`;
+        youtubePlayerDiv.innerHTML = ''; // 기존 플레이어/메시지 비움
+
         const youtubeId = extractYoutubeId(song.youtubeurl);
         if (youtubeId) {
-            youtubePlayerDiv.innerHTML = `
-                <iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1"
-                        frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            `;
+            // 재생 버튼 생성
+            const playButton = document.createElement('button');
+            playButton.className = 'play-button';
+            playButton.textContent = '재생'; // 버튼 텍스트
+            playButton.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
+            youtubePlayerDiv.appendChild(playButton);
         } else {
             youtubePlayerDiv.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>';
         }
