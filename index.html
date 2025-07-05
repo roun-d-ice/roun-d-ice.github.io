@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지유 노래방 목록</title>
+    <link rel="stylesheet" href="style.css"> <!-- CSS 파일 연결 -->
+</head>
+<body onload="handleClientLoad()"> <!-- Google API 클라이언트 라이브러리 로드 핸들러 연결 -->
+    <div class="container">
+        <h1>지유 노래방 목록</h1>
+
+        <div class="controls">
+            <button id="refreshButton">노래 목록 최신화</button>
+            <span id="cooldownTimer"></span>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('kpop')">K-POP</button>
+            <button class="tab-button" onclick="showTab('pop')">POP</button>
+            <button class="tab-button" onclick="showTab('jpop')">J-POP</button>
+            <button class="tab-button" onclick="showTab('numberInput')">번호로 찾기</button>
+        </div>
+
+        <div id="kpop" class="tab-content active">
+            <h2>K-POP</h2>
+            <div class="song-list" id="kpop-list"></div>
+        </div>
+
+        <div id="pop" class="tab-content">
+            <h2>POP</h2>
+            <div class="song-list" id="pop-list"></div>
+        </div>
+
+        <div id="jpop" class="tab-content">
+            <h2>J-POP</h2>
+            <div class="song-list" id="jpop-list"></div>
+        </div>
+
+        <div id="numberInput" class="tab-content">
+            <h2>번호로 노래 찾기</h2>
+            <div class="number-input-section">
+                <input type="number" id="songNumberInput" placeholder="노래 번호 입력">
+                <button onclick="findAndPlaySong()">찾기 및 재생</button>
+                <button onclick="shuffleSongNumbers()">번호 섞기</button>
+            </div>
+            <div id="currentSongDisplay" class="song-display"></div>
+            <div id="youtubePlayer" class="youtube-player"></div>
+        </div>
+    </div>
+
+    <script src="https://apis.google.com/js/api.js"></script> <!-- Google API 클라이언트 라이브러리 -->
+    <script src="script.js"></script> <!-- JavaScript 파일 연결 -->
+</body>
+</html>
