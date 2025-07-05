@@ -115,10 +115,25 @@ button:disabled {
     margin-top: 20px;
 }
 .youtube-player iframe {
-    width: 1300px;           /* 고정 가로 크기 */
-    height: 731.25px;        /* 16:9 비율 (1300 * 9 / 16) */
+    width: 1300px;
+    height: 731.25px;
     display: block;
     margin: 0 auto;
+}
+.play-button {
+    padding: 5px 8px;
+    font-size: 1.1em;
+    line-height: 1;
+    margin-left: 10px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    border: none;
+    flex-shrink: 0;
+}
+.play-button:hover {
+    background-color: #218838;
 }
 
 /* --- 모달(팝업) 스타일 --- */
@@ -146,24 +161,34 @@ button:disabled {
     overflow: auto;
 }
 
+/* --- 수정된 부분: 닫기 버튼 스타일 (배경 투명, 검정 X, 흰색 테두리) --- */
 .modal-content .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: none;
-    border: none;
-    font-size: 1.5em;
+    background-color: transparent; /* 배경 투명 */
+    color: #333;             /* X 아이콘 색상 검정 */
+    border: 2px solid white; /* 흰색 테두리 */
+    border-radius: 50%;       /* 원형 버튼 */
+    width: 30px;              /* 버튼 너비 */
+    height: 30px;             /* 버튼 높이 */
+    font-size: 1.2em;         /* X 아이콘 크기 */
+    display: flex;            /* X를 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 그림자 유지 */
+    transition: background-color 0.2s ease, color 0.2s ease; /* 호버 시 부드러운 전환 */
 }
 
 .modal-content .close-button:hover {
-    color: #000;
+    background-color: rgba(255, 255, 255, 0.2); /* 호버 시 배경 살짝 투명하게 */
+    color: #000; /* 호버 시 X 아이콘 색상 유지 */
 }
 
 .modal-content iframe {
-    width: 1300px;           /* 고정 가로 크기 */
-    height: 731.25px;        /* 16:9 비율 */
+    width: 1300px;
+    height: 731.25px;
     display: block;
     margin: 0 auto;
 }
