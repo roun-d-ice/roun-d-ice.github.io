@@ -4,8 +4,7 @@ const API_KEY = 'AIzaSyDA0sqk1w-v-TOoiTSVpeN-nDu-4tWqJGg';
 const SPREADSHEET_ID = '15Vkcebz289pU-sKzDGm9ETFfvbZiuG1VYTLcHST-CLw';
 
 // 각 시트의 이름을 배열로 정의 (구글 시트 탭 이름과 정확히 일치)
-// 시트 이름을 'a', 'b', 'c'로 변경했습니다.
-const SHEET_NAMES = ['a', 'b', 'c'];
+const SHEET_NAMES = ['a', 'b', 'c']; // 시트 이름을 'a', 'b', 'c'로 변경했습니다.
 
 // 불러온 데이터를 저장할 전역 변수
 let categorizedSongs = {};
@@ -90,10 +89,9 @@ async function refreshSongList(isInitialLoad = false) {
         const data = await loadSongsFromGoogleSheet();
         categorizedSongs = data;
 
-        // displayCategorizedSongs 호출 시, 웹사이트 표시 이름과 실제 시트 이름을 매핑하여 전달
-        displayCategorizedSongs('K-POP', categorizedSongs['a'] || []); // 'K-POP' 탭에 'a' 시트 데이터
-        displayCategorizedSongs('POP', categorizedSongs['b'] || []);   // 'POP' 탭에 'b' 시트 데이터
-        displayCategorizedSongs('J-POP', categorizedSongs['c'] || []);   // 'J-POP' 탭에 'c' 시트 데이터
+        displayCategorizedSongs('K-POP', categorizedSongs['a'] || []);
+        displayCategorizedSongs('POP', categorizedSongs['b'] || []);
+        displayCategorizedSongs('J-POP', categorizedSongs['c'] || []);
 
         shuffleSongNumbers();
     } catch (error) {
@@ -121,8 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function displayCategorizedSongs(categoryName, songs) {
-    // HTML ID는 'kpop-list', 'pop-list', 'jpop-list' 형태이므로, categoryName을 소문자화하여 사용
-    const normalizedCategory = categoryName.toLowerCase().replace(/-/g, ''); // K-POP -> kpop
+    const normalizedCategory = categoryName.toLowerCase().replace(/-/g, '');
     const listElementId = `${normalizedCategory}-list`;
     const listContainer = document.getElementById(listElementId);
     if (!listContainer) {
@@ -139,6 +136,18 @@ function displayCategorizedSongs(categoryName, songs) {
     songs.forEach(song => {
         const songDiv = document.createElement('div');
         songDiv.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
+
+        // --- 재생 버튼 추가 로직 시작 ---
+        if (song.youtubeid && song.youtubeid.trim() !== '') { // youtubeId가 있으면 재생 버튼 추가
+            const playButton = document.createElement('button');
+            playButton.className = 'play-button';
+            playButton.textContent = '재생';
+            playButton.onclick = () => playSongFromList(song); // 클릭 시 playSongFromList 호출
+
+            songDiv.appendChild(playButton); // 노래 정보 뒤에 버튼 추가
+        }
+        // --- 재생 버튼 추가 로직 끝 ---
+
         listContainer.appendChild(songDiv);
     });
 }
@@ -149,20 +158,22 @@ const youtubePlayerDiv = document.getElementById('youtubePlayer');
 
 function shuffleSongNumbers() {
     const allSongs = [];
-    // SHEET_NAMES가 'a', 'b', 'c'로 바뀌었으므로, 이 시트들에서 데이터를 가져옴
     for (const sheetName of SHEET_NAMES) {
         if (categorizedSongs[sheetName]) {
             allSongs.push(...categorizedSongs[sheetName]);
         }
     }
 
-    for (let i = allSongs.length - 1; i > 0; i--) {
+    // title이 비어있지 않은 노래만 필터링
+    const filteredSongs = allSongs.filter(song => song.title && song.title.trim() !== '');
+
+    for (let i = filteredSongs.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [allSongs[i], allSongs[j]] = [allSongs[j], allSongs[i]];
+        [filteredSongs[i], filteredSongs[j]] = [filteredSongs[j], filteredSongs[i]];
     }
 
     allSongsById = {};
-    allSongs.forEach((song, index) => {
+    filteredSongs.forEach((song, index) => {
         const songId = index + 1;
         allSongsById[songId] = song;
     });
@@ -186,7 +197,7 @@ function findAndPlaySong() {
         currentSongDisplay.innerHTML = `<strong>${inputNumber}. ${song.artist}</strong> - ${song.title}`;
         if (song.youtubeid) {
             youtubePlayerDiv.innerHTML = `
-                <iframe src="https://www.youtube.com/embed/${song.youtubeid}?autoplay=1" 
+                <iframe src="https://www.youtube.com/embed/${song.youtubeid}?autoplay=1"
                         frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             `;
         } else {
@@ -196,4 +207,31 @@ function findAndPlaySong() {
         currentSongDisplay.textContent = '해당 번호의 노래를 찾을 수 없습니다.';
         youtubePlayerDiv.innerHTML = '';
     }
+}
+
+// --- 새로 추가된 함수: 목록에서 재생 버튼 클릭 시 호출 ---
+function playSongFromList(song) {
+    // "랜덤 노래방" 탭으로 전환
+    showTab('numberInput');
+
+    // "랜덤 노래방" 탭의 노래 정보 및 유튜브 플레이어 업데이트
+    const display = document.getElementById('currentSongDisplay');
+    const player = document.getElementById('youtubePlayer');
+
+    if (song) {
+        display.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
+        if (song.youtubeid && song.youtubeid.trim() !== '') {
+            player.innerHTML = `
+                <iframe src="https://www.youtube.com/embed/${song.youtubeid}?autoplay=1"
+                        frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            `;
+        } else {
+            player.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>';
+        }
+    } else {
+        display.textContent = '노래 정보를 찾을 수 없습니다.';
+        player.innerHTML = '';
+    }
+    // 유튜브 플레이어가 화면에 보이도록 스크롤 (선택 사항)
+    // player.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }

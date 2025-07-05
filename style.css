@@ -118,3 +118,17 @@ button:disabled {
     height: 315px;
     border: none;
 }
+/* 재생 버튼 스타일 */
+.play-button {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    margin-left: 10px;
+    background-color: #28a745; /* 초록색 계열 */
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    border: none;
+}
+.play-button:hover {
+    background-color: #218838;
+}
