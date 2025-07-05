@@ -37,7 +37,7 @@ button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
 }
-#cooldownTimer { /* 클래스에서 ID로 변경 */
+#cooldownTimer {
     margin-left: 10px;
     color: #888;
     font-size: 0.9em;
