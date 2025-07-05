@@ -38,10 +38,10 @@
         </div>
 
         <div id="numberInput" class="tab-content">
-            <h2>랜덤 노래방</h2>
+            <h2>랜덤 노래방 <span id="totalSongsCount" style="font-size: 0.8em; color: #666;"></span></h2> <!-- 추가된 부분 -->
             <div class="number-input-section">
                 <input type="number" id="songNumberInput" placeholder="노래 번호 입력" />
-                <button onclick="findAndPlaySong()">찾기 및 재생</button>
+                <button onclick="findAndPlaySong()">찾기</button>
                 <button onclick="shuffleSongNumbers()">번호 섞기</button>
             </div>
             <div id="currentSongDisplay" class="song-display"></div>

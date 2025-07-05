@@ -1,7 +1,7 @@
 // !!! 여기에 발급받은 API 키를 입력하세요 !!!
-const API_KEY = 'AIzaSyDA0sqk1w-v-TOoiTSVpeN-nDu-4tWqJGg';
+const API_KEY = 'YOUR_API_KEY';
 // !!! 여기에 구글 스프레드시트 ID를 입력하세요 (URL에서 docs.google.com/spreadsheets/d/여기/edit) !!!
-const SPREADSHEET_ID = '15Vkcebz289pU-sKzDGm9ETFfvbZiuG1VYTLcHST-CLw';
+const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID';
 
 // 각 시트의 이름을 배열로 정의 (구글 시트 탭 이름과 정확히 일치)
 const SHEET_NAMES = ['a', 'b', 'c']; // 시트 이름을 'a', 'b', 'c'로 변경했습니다.
@@ -93,7 +93,7 @@ async function refreshSongList(isInitialLoad = false) {
         displayCategorizedSongs('POP', categorizedSongs['b'] || []);
         displayCategorizedSongs('J-POP', categorizedSongs['c'] || []);
 
-        shuffleSongNumbers();
+        shuffleSongNumbers(); // 총 곡수 업데이트 포함
     } catch (error) {
         console.error("노래 목록을 불러오는 중 오류 발생:", error);
         alert("노래 목록을 불러오는 데 실패했습니다. API 키, 스프레드시트 ID, 시트 이름, 또는 네트워크 연결을 확인해주세요.");
@@ -136,29 +136,29 @@ function displayCategorizedSongs(categoryName, songs) {
     }
 
     songsToDisplay.forEach(song => {
-        const songDiv = document.createElement('div');
-        // 텍스트 내용만 먼저 추가
-        const textSpan = document.createElement('span');
-        textSpan.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
-        songDiv.appendChild(textSpan);
+        const songEntryDiv = document.createElement('div');
+        songEntryDiv.className = 'song-entry';
 
-        // youtubeId가 있으면 재생 버튼 추가
+        const songInfoSpan = document.createElement('span');
+        songInfoSpan.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
+        songEntryDiv.appendChild(songInfoSpan);
+
+        // youtubeId가 있으면 클릭 가능하게 만들고 팝업 함수 연결
         if (song.youtubeid && song.youtubeid.trim() !== '') {
-            const playButton = document.createElement('button');
-            playButton.className = 'play-button';
-            playButton.textContent = '▶'; // '재생'에서 '▶'로 변경
-            playButton.onclick = () => playSongFromList(song);
-
-            songDiv.appendChild(playButton);
+            songEntryDiv.style.cursor = 'pointer';
+            songEntryDiv.onclick = () => openYoutubePopup(song.youtubeid, `${song.artist} - ${song.title}`);
+        } else {
+            songEntryDiv.style.cursor = 'default'; // youtubeId 없으면 클릭 불가능
         }
 
-        listContainer.appendChild(songDiv);
+        listContainer.appendChild(songEntryDiv);
     });
 }
 
 const songNumberInput = document.getElementById('songNumberInput');
 const currentSongDisplay = document.getElementById('currentSongDisplay');
 const youtubePlayerDiv = document.getElementById('youtubePlayer');
+const totalSongsCountSpan = document.getElementById('totalSongsCount'); // 총 곡수 표시 span
 
 function shuffleSongNumbers() {
     const allSongs = [];
@@ -169,6 +169,11 @@ function shuffleSongNumbers() {
     }
 
     const filteredSongs = allSongs.filter(song => song.title && song.title.trim() !== '');
+
+    // 총 곡수 업데이트
+    if (totalSongsCountSpan) {
+        totalSongsCountSpan.textContent = `(총 ${filteredSongs.length}곡)`;
+    }
 
     for (let i = filteredSongs.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -204,7 +209,8 @@ function findAndPlaySong() {
                         frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             `;
         } else {
-            youtubePlayerDiv.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>';
+            currentSongDisplay.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>'; // 노래 정보는 표시
+            youtubePlayerDiv.innerHTML = ''; // 플레이어만 비움
         }
     } else {
         currentSongDisplay.textContent = '해당 번호의 노래를 찾을 수 없습니다.';
@@ -212,24 +218,38 @@ function findAndPlaySong() {
     }
 }
 
-function playSongFromList(song) {
-    showTab('numberInput');
-
-    const display = document.getElementById('currentSongDisplay');
-    const player = document.getElementById('youtubePlayer');
-
-    if (song) {
-        display.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
-        if (song.youtubeid && song.youtubeid.trim() !== '') {
-            player.innerHTML = `
-                <iframe src="https://www.youtube.com/embed/${song.youtubeid}?autoplay=1"
-                        frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            `;
-        } else {
-            player.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>';
-        }
-    } else {
-        display.textContent = '노래 정보를 찾을 수 없습니다.';
-        player.innerHTML = '';
+function openYoutubePopup(youtubeId, songInfo) {
+    const existingModal = document.querySelector('.modal-overlay');
+    if (existingModal) {
+        existingModal.remove();
     }
+
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => {
+        modalOverlay.remove();
+        document.body.style.overflow = '';
+    };
+
+    const youtubeIframe = document.createElement('iframe');
+    youtubeIframe.setAttribute('src', `https://www.youtube.com/embed/${youtubeId}?autoplay=1`);
+    youtubeIframe.setAttribute('frameborder', '0');
+    youtubeIframe.setAttribute('allow', 'autoplay; encrypted-media');
+    youtubeIframe.setAttribute('allowfullscreen', 'true');
+    youtubeIframe.setAttribute('title', songInfo);
+
+    modalContent.appendChild(closeButton);
+    modalContent.appendChild(youtubeIframe);
+    modalOverlay.appendChild(modalContent);
+
+    document.body.appendChild(modalOverlay);
+
+    document.body.style.overflow = 'hidden';
 }
