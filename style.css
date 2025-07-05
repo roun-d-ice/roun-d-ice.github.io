@@ -1,0 +1,120 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+h1, h2 {
+    color: #0056b3;
+    text-align: center;
+}
+.controls {
+    text-align: right;
+    margin-bottom: 20px;
+}
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 5px;
+}
+button:hover {
+    background-color: #0056b3;
+}
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+#cooldownTimer { /* 클래스에서 ID로 변경 */
+    margin-left: 10px;
+    color: #888;
+    font-size: 0.9em;
+}
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+.tab-button {
+    background-color: #e9ecef;
+    color: #495057;
+    border-radius: 0;
+    margin: 0;
+    padding: 12px 20px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.tab-button.active {
+    background-color: #007bff;
+    color: white;
+    border-bottom: 3px solid #007bff;
+}
+.tab-content {
+    display: none;
+    padding: 20px 0;
+    border-top: none;
+}
+.tab-content.active {
+    display: block;
+}
+.song-list {
+    border: 1px solid #eee;
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #fdfdfd;
+    border-radius: 5px;
+}
+.song-list div {
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+}
+.song-list div:last-child {
+    border-bottom: none;
+}
+.number-input-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+.number-input-section input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 150px;
+}
+.song-display {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    background-color: #eaf6ff;
+    border-radius: 5px;
+}
+.youtube-player {
+    text-align: center;
+    margin-top: 20px;
+}
+.youtube-player iframe {
+    width: 100%;
+    max-width: 560px;
+    height: 315px;
+    border: none;
+}
