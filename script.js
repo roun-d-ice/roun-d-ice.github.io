@@ -4,7 +4,8 @@ const API_KEY = 'AIzaSyDA0sqk1w-v-TOoiTSVpeN-nDu-4tWqJGg';
 const SPREADSHEET_ID = '15Vkcebz289pU-sKzDGm9ETFfvbZiuG1VYTLcHST-CLw';
 
 // 각 시트의 이름을 배열로 정의 (구글 시트 탭 이름과 정확히 일치)
-const SHEET_NAMES = ['K-POP', 'POP', 'J-POP'];
+// 시트 이름을 'a', 'b', 'c'로 변경했습니다.
+const SHEET_NAMES = ['a', 'b', 'c'];
 
 // 불러온 데이터를 저장할 전역 변수
 let categorizedSongs = {};
@@ -89,9 +90,10 @@ async function refreshSongList(isInitialLoad = false) {
         const data = await loadSongsFromGoogleSheet();
         categorizedSongs = data;
 
-        displayCategorizedSongs('K-POP', categorizedSongs['K-POP'] || []);
-        displayCategorizedSongs('POP', categorizedSongs['POP'] || []);
-        displayCategorizedSongs('J-POP', categorizedSongs['J-POP'] || []);
+        // displayCategorizedSongs 호출 시, 웹사이트 표시 이름과 실제 시트 이름을 매핑하여 전달
+        displayCategorizedSongs('K-POP', categorizedSongs['a'] || []); // 'K-POP' 탭에 'a' 시트 데이터
+        displayCategorizedSongs('POP', categorizedSongs['b'] || []);   // 'POP' 탭에 'b' 시트 데이터
+        displayCategorizedSongs('J-POP', categorizedSongs['c'] || []);   // 'J-POP' 탭에 'c' 시트 데이터
 
         shuffleSongNumbers();
     } catch (error) {
@@ -119,7 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function displayCategorizedSongs(categoryName, songs) {
-    const normalizedCategory = categoryName.toLowerCase().replace(/-/g, '');
+    // HTML ID는 'kpop-list', 'pop-list', 'jpop-list' 형태이므로, categoryName을 소문자화하여 사용
+    const normalizedCategory = categoryName.toLowerCase().replace(/-/g, ''); // K-POP -> kpop
     const listElementId = `${normalizedCategory}-list`;
     const listContainer = document.getElementById(listElementId);
     if (!listContainer) {
@@ -146,6 +149,7 @@ const youtubePlayerDiv = document.getElementById('youtubePlayer');
 
 function shuffleSongNumbers() {
     const allSongs = [];
+    // SHEET_NAMES가 'a', 'b', 'c'로 바뀌었으므로, 이 시트들에서 데이터를 가져옴
     for (const sheetName of SHEET_NAMES) {
         if (categorizedSongs[sheetName]) {
             allSongs.push(...categorizedSongs[sheetName]);
@@ -186,4 +190,10 @@ function findAndPlaySong() {
                         frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             `;
         } else {
-            youtubePlayerDiv.innerHTML = '<p>이 
+            youtubePlayerDiv.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>';
+        }
+    } else {
+        currentSongDisplay.textContent = '해당 번호의 노래를 찾을 수 없습니다.';
+        youtubePlayerDiv.innerHTML = '';
+    }
+}
