@@ -81,6 +81,8 @@ button:disabled {
 .song-list div {
     padding: 8px 0;
     border-bottom: 1px dashed #eee;
+    display: flex; /* 버튼과 텍스트를 한 줄에 표시 */
+    align-items: center; /* 세로 정렬 */
 }
 .song-list div:last-child {
     border-bottom: none;
@@ -120,14 +122,16 @@ button:disabled {
 }
 /* 재생 버튼 스타일 */
 .play-button {
-    padding: 5px 10px;
-    font-size: 0.8em;
+    padding: 5px 8px; /* 패딩 조정 */
+    font-size: 1.1em; /* 아이콘 크기 키움 */
+    line-height: 1; /* 아이콘 세로 정렬 */
     margin-left: 10px;
     background-color: #28a745; /* 초록색 계열 */
     color: white;
     border-radius: 3px;
     cursor: pointer;
     border: none;
+    flex-shrink: 0; /* 내용이 길어져도 버튼이 줄어들지 않게 */
 }
 .play-button:hover {
     background-color: #218838;

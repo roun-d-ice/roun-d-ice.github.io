@@ -128,25 +128,29 @@ function displayCategorizedSongs(categoryName, songs) {
     }
     listContainer.innerHTML = '';
 
-    if (songs.length === 0) {
+    const songsToDisplay = songs.filter(song => song.title && song.title.trim() !== '');
+
+    if (songsToDisplay.length === 0) {
         listContainer.innerHTML = '<p>노래 목록이 없습니다.</p>';
         return;
     }
 
-    songs.forEach(song => {
+    songsToDisplay.forEach(song => {
         const songDiv = document.createElement('div');
-        songDiv.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
+        // 텍스트 내용만 먼저 추가
+        const textSpan = document.createElement('span');
+        textSpan.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
+        songDiv.appendChild(textSpan);
 
-        // --- 재생 버튼 추가 로직 시작 ---
-        if (song.youtubeid && song.youtubeid.trim() !== '') { // youtubeId가 있으면 재생 버튼 추가
+        // youtubeId가 있으면 재생 버튼 추가
+        if (song.youtubeid && song.youtubeid.trim() !== '') {
             const playButton = document.createElement('button');
             playButton.className = 'play-button';
-            playButton.textContent = '재생';
-            playButton.onclick = () => playSongFromList(song); // 클릭 시 playSongFromList 호출
+            playButton.textContent = '▶'; // '재생'에서 '▶'로 변경
+            playButton.onclick = () => playSongFromList(song);
 
-            songDiv.appendChild(playButton); // 노래 정보 뒤에 버튼 추가
+            songDiv.appendChild(playButton);
         }
-        // --- 재생 버튼 추가 로직 끝 ---
 
         listContainer.appendChild(songDiv);
     });
@@ -164,7 +168,6 @@ function shuffleSongNumbers() {
         }
     }
 
-    // title이 비어있지 않은 노래만 필터링
     const filteredSongs = allSongs.filter(song => song.title && song.title.trim() !== '');
 
     for (let i = filteredSongs.length - 1; i > 0; i--) {
@@ -209,12 +212,9 @@ function findAndPlaySong() {
     }
 }
 
-// --- 새로 추가된 함수: 목록에서 재생 버튼 클릭 시 호출 ---
 function playSongFromList(song) {
-    // "랜덤 노래방" 탭으로 전환
     showTab('numberInput');
 
-    // "랜덤 노래방" 탭의 노래 정보 및 유튜브 플레이어 업데이트
     const display = document.getElementById('currentSongDisplay');
     const player = document.getElementById('youtubePlayer');
 
@@ -232,6 +232,4 @@ function playSongFromList(song) {
         display.textContent = '노래 정보를 찾을 수 없습니다.';
         player.innerHTML = '';
     }
-    // 유튜브 플레이어가 화면에 보이도록 스크롤 (선택 사항)
-    // player.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
