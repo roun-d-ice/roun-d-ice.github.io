@@ -33,6 +33,7 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
+            // A열부터 C열까지 (artist, title, youtubeUrl 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
                 range: `${sheetName}!A:C`,
@@ -46,7 +47,8 @@ async function loadSongsFromGoogleSheet() {
                     headers.forEach((header, index) => {
                         song[header] = row[index];
                     });
-                    if (!song.youtubeid) song.youtubeid = '';
+                    // youtubeurl이 없는 경우 빈 문자열로 처리
+                    if (!song.youtubeurl) song.youtubeurl = '';
                     return song;
                 });
                 fetchedData[sheetName] = songs;
@@ -93,7 +95,7 @@ async function refreshSongList(isInitialLoad = false) {
         displayCategorizedSongs('POP', categorizedSongs['b'] || []);
         displayCategorizedSongs('J-POP', categorizedSongs['c'] || []);
 
-        shuffleSongNumbers(); // 총 곡수 업데이트 포함
+        shuffleSongNumbers();
     } catch (error) {
         console.error("노래 목록을 불러오는 중 오류 발생:", error);
         alert("노래 목록을 불러오는 데 실패했습니다. API 키, 스프레드시트 ID, 시트 이름, 또는 네트워크 연결을 확인해주세요.");
@@ -117,6 +119,14 @@ function showTab(tabId) {
 document.addEventListener('DOMContentLoaded', () => {
     showTab('kpop');
 });
+
+// --- 유튜브 URL에서 ID 추출하는 헬퍼 함수 ---
+function extractYoutubeId(url) {
+    if (!url || typeof url !== 'string') return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
 
 function displayCategorizedSongs(categoryName, songs) {
     const normalizedCategory = categoryName.toLowerCase().replace(/-/g, '');
@@ -143,12 +153,13 @@ function displayCategorizedSongs(categoryName, songs) {
         songInfoSpan.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
         songEntryDiv.appendChild(songInfoSpan);
 
-        // youtubeId가 있으면 클릭 가능하게 만들고 팝업 함수 연결
-        if (song.youtubeid && song.youtubeid.trim() !== '') {
+        // youtubeUrl이 있고 유효한 ID를 추출할 수 있으면 클릭 가능하게 만들고 팝업 함수 연결
+        const youtubeId = extractYoutubeId(song.youtubeurl);
+        if (youtubeId) {
             songEntryDiv.style.cursor = 'pointer';
-            songEntryDiv.onclick = () => openYoutubePopup(song.youtubeid, `${song.artist} - ${song.title}`);
+            songEntryDiv.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
         } else {
-            songEntryDiv.style.cursor = 'default'; // youtubeId 없으면 클릭 불가능
+            songEntryDiv.style.cursor = 'default'; // youtubeUrl 없으면 클릭 불가능
         }
 
         listContainer.appendChild(songEntryDiv);
@@ -203,14 +214,14 @@ function findAndPlaySong() {
 
     if (song) {
         currentSongDisplay.innerHTML = `<strong>${inputNumber}. ${song.artist}</strong> - ${song.title}`;
-        if (song.youtubeid) {
+        const youtubeId = extractYoutubeId(song.youtubeurl); // URL에서 ID 추출
+        if (youtubeId) {
             youtubePlayerDiv.innerHTML = `
-                <iframe src="https://www.youtube.com/embed/${song.youtubeid}?autoplay=1"
+                <iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1"
                         frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             `;
         } else {
-            currentSongDisplay.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>'; // 노래 정보는 표시
-            youtubePlayerDiv.innerHTML = ''; // 플레이어만 비움
+            youtubePlayerDiv.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>';
         }
     } else {
         currentSongDisplay.textContent = '해당 번호의 노래를 찾을 수 없습니다.';
@@ -218,10 +229,17 @@ function findAndPlaySong() {
     }
 }
 
-function openYoutubePopup(youtubeId, songInfo) {
+// --- 유튜브 팝업 열기 함수 ---
+function openYoutubePopup(youtubeUrl, songInfo) { // youtubeId 대신 youtubeUrl 받음
     const existingModal = document.querySelector('.modal-overlay');
     if (existingModal) {
         existingModal.remove();
+    }
+
+    const youtubeId = extractYoutubeId(youtubeUrl); // URL에서 ID 추출
+    if (!youtubeId) {
+        alert('유효한 YouTube URL이 아닙니다.');
+        return;
     }
 
     const modalOverlay = document.createElement('div');
