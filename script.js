@@ -1,7 +1,7 @@
 // !!! 여기에 발급받은 API 키를 입력하세요 !!!
-const API_KEY = 'YOUR_API_KEY';
+const API_KEY = 'AIzaSyDA0sqk1w-v-TOoiTSVpeN-nDu-4tWqJGg';
 // !!! 여기에 구글 스프레드시트 ID를 입력하세요 (URL에서 docs.google.com/spreadsheets/d/여기/edit) !!!
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID';
+const SPREADSHEET_ID = '15Vkcebz289pU-sKzDGm9ETFfvbZiuG1VYTLcHST-CLw';
 
 // 각 시트의 이름을 배열로 정의 (구글 시트 탭 이름과 정확히 일치)
 const SHEET_NAMES = ['a', 'b', 'c']; // 시트 이름을 'a', 'b', 'c'로 변경했습니다.
