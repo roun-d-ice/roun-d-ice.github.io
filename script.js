@@ -33,7 +33,6 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
-            // A열부터 C열까지 (artist, title, youtubeUrl 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
                 range: `${sheetName}!A:C`,
@@ -47,7 +46,6 @@ async function loadSongsFromGoogleSheet() {
                     headers.forEach((header, index) => {
                         song[header] = row[index];
                     });
-                    // youtubeurl이 없는 경우 빈 문자열로 처리
                     if (!song.youtubeurl) song.youtubeurl = '';
                     return song;
                 });
@@ -120,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showTab('kpop');
 });
 
-// --- 유튜브 URL에서 ID 추출하는 헬퍼 함수 ---
+// 유튜브 URL에서 ID 추출하는 헬퍼 함수
 function extractYoutubeId(url) {
     if (!url || typeof url !== 'string') return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -153,13 +151,12 @@ function displayCategorizedSongs(categoryName, songs) {
         songInfoSpan.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
         songEntryDiv.appendChild(songInfoSpan);
 
-        // youtubeUrl이 있고 유효한 ID를 추출할 수 있으면 클릭 가능하게 만들고 팝업 함수 연결
         const youtubeId = extractYoutubeId(song.youtubeurl);
         if (youtubeId) {
             songEntryDiv.style.cursor = 'pointer';
             songEntryDiv.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
         } else {
-            songEntryDiv.style.cursor = 'default'; // youtubeUrl 없으면 클릭 불가능
+            songEntryDiv.style.cursor = 'default';
         }
 
         listContainer.appendChild(songEntryDiv);
@@ -169,7 +166,7 @@ function displayCategorizedSongs(categoryName, songs) {
 const songNumberInput = document.getElementById('songNumberInput');
 const currentSongDisplay = document.getElementById('currentSongDisplay');
 const youtubePlayerDiv = document.getElementById('youtubePlayer');
-const totalSongsCountSpan = document.getElementById('totalSongsCount'); // 총 곡수 표시 span
+const totalSongsCountSpan = document.getElementById('totalSongsCount');
 
 function shuffleSongNumbers() {
     const allSongs = [];
@@ -181,7 +178,6 @@ function shuffleSongNumbers() {
 
     const filteredSongs = allSongs.filter(song => song.title && song.title.trim() !== '');
 
-    // 총 곡수 업데이트
     if (totalSongsCountSpan) {
         totalSongsCountSpan.textContent = `(총 ${filteredSongs.length}곡)`;
     }
@@ -214,7 +210,7 @@ function findAndPlaySong() {
 
     if (song) {
         currentSongDisplay.innerHTML = `<strong>${inputNumber}. ${song.artist}</strong> - ${song.title}`;
-        const youtubeId = extractYoutubeId(song.youtubeurl); // URL에서 ID 추출
+        const youtubeId = extractYoutubeId(song.youtubeurl);
         if (youtubeId) {
             youtubePlayerDiv.innerHTML = `
                 <iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1"
@@ -229,14 +225,13 @@ function findAndPlaySong() {
     }
 }
 
-// --- 유튜브 팝업 열기 함수 ---
-function openYoutubePopup(youtubeUrl, songInfo) { // youtubeId 대신 youtubeUrl 받음
+function openYoutubePopup(youtubeUrl, songInfo) {
     const existingModal = document.querySelector('.modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
-    const youtubeId = extractYoutubeId(youtubeUrl); // URL에서 ID 추출
+    const youtubeId = extractYoutubeId(youtubeUrl);
     if (!youtubeId) {
         alert('유효한 YouTube URL이 아닙니다.');
         return;
