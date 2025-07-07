@@ -139,7 +139,7 @@ button:disabled {
 #refreshButton {
     width: 120px;  /* 기존 약 180px 정도라면 2/3 크기 */
     height: 36px;  /* 기존 약 54px 정도라면 2/3 크기 */
-    font-size: 14px; /* 글씨 크기도 약간 줄임 */
+    font-size: 12px; /* 글씨 크기도 약간 줄임 */
     padding: 6px 10px;
     box-sizing: border-box;
 }
