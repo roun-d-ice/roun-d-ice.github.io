@@ -71,7 +71,7 @@ async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
         let remainingTime = COOLDOWN_SECONDS;
-        refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`; // 버튼 텍스트 변경
+        refreshButton.textContent = `(${remainingTime}초 후 가능)`; // 버튼 텍스트 변경
 
         cooldownInterval = setInterval(() => {
             remainingTime--;
@@ -80,7 +80,7 @@ async function refreshSongList(isInitialLoad = false) {
                 refreshButton.disabled = false;
                 refreshButton.textContent = '노래 목록 최신화'; // 원래 텍스트 복원
             } else {
-                refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`; // 남은 시간 표시
+                refreshButton.textContent = `(${remainingTime}초 후 가능)`; // 남은 시간 표시
             }
         }, 1000);
     }
