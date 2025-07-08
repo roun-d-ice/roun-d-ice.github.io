@@ -218,11 +218,10 @@ function renderSongList() {
 
         songListContainer.appendChild(songEntryDiv);
 
-        // --- 마퀴 효과를 위한 오버플로우 감지 및 클래스 추가 ---
-        // DOM에 추가된 후 너비 계산이 정확하도록 setTimeout 사용
-        // textContent의 실제 너비와 부모 컨테이너의 너비 비교
+        // --- 마퀴 효과를 위한 오버플로우 감지 (렌더링 후 실행) ---
+        // setTimeout을 사용하여 DOM에 추가된 후 너비 계산
         setTimeout(() => {
-            // 텍스트 스팬의 실제 너비 (패딩 제외)
+            // 텍스트 스팬의 실제 너비
             const titleTextWidth = titleSpan.offsetWidth;
             const artistTextWidth = artistSpan.offsetWidth;
 
@@ -230,24 +229,15 @@ function renderSongList() {
             const titleContainerWidth = titleDiv.clientWidth;
             const artistContainerWidth = artistDiv.clientWidth;
 
-            // 텍스트 스팬에 padding-right: 100% 추가 (마퀴 효과를 위해)
-            titleSpan.style.paddingRight = '100%';
-            artistSpan.style.paddingRight = '100%';
-
-            // 실제 텍스트가 컨테이너를 넘치는지 확인
+            // 텍스트가 컨테이너를 넘치는지 확인
             if (titleTextWidth > titleContainerWidth) {
                 titleDiv.classList.add('overflowing-text');
-                // 넘치는 정도에 따라 애니메이션 시간 동적으로 설정 (선택 사항)
-                const duration = Math.max(5, titleTextWidth / 50); // 50px당 1초, 최소 5초
-                titleDiv.style.setProperty('--marquee-duration', `${duration}s`);
             } else {
                 titleDiv.classList.remove('overflowing-text');
             }
 
             if (artistTextWidth > artistContainerWidth) {
                 artistDiv.classList.add('overflowing-text');
-                const duration = Math.max(5, artistTextWidth / 50);
-                artistDiv.style.setProperty('--marquee-duration', `${duration}s`);
             } else {
                 artistDiv.classList.remove('overflowing-text');
             }

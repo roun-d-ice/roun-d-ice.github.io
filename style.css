@@ -135,7 +135,6 @@ button:disabled {
 }
 
 /* --- 제목/가수명 오버플로우 마퀴 효과 --- */
-/* 텍스트 컨테이너 */
 .song-title, .artist-name {
     width: 100%; /* 부모 너비에 맞춤 */
     overflow: hidden; /* 넘치는 텍스트 숨김 */
@@ -144,26 +143,25 @@ button:disabled {
     position: relative; /* 텍스트 스크롤을 위한 기준점 */
 }
 
-/* 실제 텍스트 스팬 */
 .song-title-text, .artist-name-text {
-    display: inline-block; /* 텍스트 스크롤을 위해 inline-block */
-    /* padding-right: 100%; 제거 - JS에서 동적으로 처리 */
-    animation-play-state: paused; /* 기본적으로 애니메이션 정지 */
+    display: inline-block;
+    /* padding-right: 100%; 제거됨 */
+    /* animation-play-state: paused; 제거됨 */
 }
 
-/* overflowing-text 클래스가 있는 경우에만 애니메이션 적용 */
-.song-title.overflowing-text .song-title-text,
-.artist-name.overflowing-text .artist-name-text {
-    animation-name: marquee;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-duration: var(--marquee-duration, 5s); /* JS에서 동적으로 설정 */
-}
-
+/* 텍스트가 넘치는 경우 (JS로 overflowing-text 클래스 추가)에만 애니메이션 적용 */
 /* 호버 시 애니메이션 시작 */
 .song-entry:hover .song-title.overflowing-text .song-title-text,
 .song-entry:hover .artist-name.overflowing-text .artist-name-text {
-    animation-play-state: running;
+    animation-name: marquee;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 8s; /* 고정된 애니메이션 시간 (조절 가능) */
+}
+
+/* 호버가 풀리면 애니메이션을 초기화 (애니메이션 이름을 none으로 설정) */
+.song-title-text, .artist-name-text {
+    animation-name: none; /* 기본 상태에서 애니메이션 없음 */
 }
 
 
