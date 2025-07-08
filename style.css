@@ -135,35 +135,45 @@ button:disabled {
 }
 
 /* --- 제목/가수명 오버플로우 마퀴 효과 --- */
+/* 텍스트 컨테이너 */
 .song-title, .artist-name {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    position: relative;
+    width: 100%; /* 부모 너비에 맞춤 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+    text-overflow: ellipsis; /* 넘칠 때 ... 표시 */
+    position: relative; /* 텍스트 스크롤을 위한 기준점 */
 }
 
+/* 실제 텍스트 스팬 */
 .song-title-text, .artist-name-text {
-    display: inline-block;
-    padding-right: 100%;
-    animation-play-state: paused;
+    display: inline-block; /* 텍스트 스크롤을 위해 inline-block */
+    /* padding-right: 100%; 제거 - JS에서 동적으로 처리 */
+    animation-play-state: paused; /* 기본적으로 애니메이션 정지 */
 }
 
-/* --- 수정된 부분: overflowing-text 클래스가 직접 적용된 요소에만 애니메이션 적용 --- */
-.song-entry:hover .song-title.overflowing-text .song-title-text,
-.song-entry:hover .artist-name.overflowing-text .artist-name-text {
-    animation-play-state: running;
+/* overflowing-text 클래스가 있는 경우에만 애니메이션 적용 */
+.song-title.overflowing-text .song-title-text,
+.artist-name.overflowing-text .artist-name-text {
     animation-name: marquee;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
-    animation-duration: 5s;
+    animation-duration: var(--marquee-duration, 5s); /* JS에서 동적으로 설정 */
 }
 
+/* 호버 시 애니메이션 시작 */
+.song-entry:hover .song-title.overflowing-text .song-title-text,
+.song-entry:hover .artist-name.overflowing-text .artist-name-text {
+    animation-play-state: running;
+}
+
+
+/* 마퀴 애니메이션 키프레임 */
 @keyframes marquee {
     0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% - 10px)); }
+    100% { transform: translateX(calc(-100% - 10px)); } /* 텍스트 너비만큼 왼쪽으로 이동 */
 }
 
+/* 텍스트 스타일 */
 .song-title {
     font-weight: bold;
     font-size: 0.95em;
