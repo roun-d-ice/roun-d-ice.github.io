@@ -71,7 +71,6 @@ button:disabled {
     display: block;
 }
 
-/* --- 검색 및 필터 섹션 스타일 --- */
 .search-filter-section {
     display: flex;
     justify-content: center;
@@ -96,20 +95,18 @@ button:disabled {
     cursor: pointer;
 }
 
-/* --- 노래 목록 그리드 컨테이너 --- */
 .song-list {
-    display: grid; /* 그리드 레이아웃 */
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 반응형 컬럼 */
-    gap: 20px; /* 카드 사이 간격 */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
     border: 1px solid #eee;
     padding: 20px;
-    max-height: 600px; /* 높이 제한 */
+    max-height: 600px;
     overflow-y: auto;
     background-color: #fdfdfd;
     border-radius: 5px;
 }
 
-/* --- 노래 카드 항목 스타일 --- */
 .song-entry {
     background-color: #fff;
     border: 1px solid #ddd;
@@ -120,41 +117,42 @@ button:disabled {
     display: flex;
     flex-direction: column;
     align-items: center;
-    cursor: pointer; /* 클릭 가능함을 나타냄 */
+    cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .song-entry:hover {
-    transform: translateY(-5px); /* 호버 시 살짝 위로 */
+    transform: translateY(-5px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* 앨범 자켓 이미지 */
 .song-entry img.album-cover {
     width: 100%;
-    height: auto; /* 높이는 자동으로 */
-    aspect-ratio: 1 / 1; /* 정사각형 유지 */
-    object-fit: cover; /* 이미지가 잘리더라도 비율 유지 */
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
     border-radius: 4px;
     margin-bottom: 8px;
 }
 
 /* --- 제목/가수명 오버플로우 마퀴 효과 --- */
+/* 텍스트가 넘치지 않을 때는 ellipsis 유지 */
 .song-title, .artist-name {
-    width: 100%; /* 부모 너비에 맞춤 */
-    overflow: hidden; /* 넘치는 텍스트 숨김 */
-    white-space: nowrap; /* 줄바꿈 방지 */
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis; /* 넘칠 때 ... 표시 */
-    position: relative; /* 텍스트 스크롤을 위한 기준점 */
+    position: relative;
 }
 
 .song-title-text, .artist-name-text {
-    display: inline-block; /* 텍스트 스크롤을 위해 inline-block */
-    padding-right: 100%; /* 텍스트가 끝까지 스크롤되도록 */
+    display: inline-block;
+    padding-right: 100%; /* 텍스트가 끝까지 스크롤되도록 여유 공간 확보 */
     animation-play-state: paused; /* 기본적으로 애니메이션 정지 */
 }
 
-.song-entry:hover .song-title-text,
-.song-entry:hover .artist-name-text {
+/* 텍스트가 넘치는 경우 (JS로 overflowing-text 클래스 추가)에만 애니메이션 적용 */
+.song-entry:hover .overflowing-text .song-title-text,
+.song-entry:hover .overflowing-text .artist-name-text {
     animation-play-state: running; /* 호버 시 애니메이션 시작 */
     animation-name: marquee;
     animation-timing-function: linear;

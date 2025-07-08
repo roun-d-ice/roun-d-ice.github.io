@@ -186,14 +186,12 @@ function renderSongList() {
         const songEntryDiv = document.createElement('div');
         songEntryDiv.className = 'song-entry';
 
-        // 앨범 자켓 이미지
         const albumCoverImg = document.createElement('img');
         albumCoverImg.className = 'album-cover';
-        albumCoverImg.src = song.albumcoverurl || 'https://via.placeholder.com/150?text=No+Cover'; // 기본 이미지
+        albumCoverImg.src = song.albumcoverurl || 'https://via.placeholder.com/150?text=No+Cover';
         albumCoverImg.alt = `${song.title} 앨범 자켓`;
         songEntryDiv.appendChild(albumCoverImg);
 
-        // 노래 제목 (마퀴 효과 적용)
         const titleDiv = document.createElement('div');
         titleDiv.className = 'song-title';
         const titleSpan = document.createElement('span');
@@ -202,7 +200,6 @@ function renderSongList() {
         titleDiv.appendChild(titleSpan);
         songEntryDiv.appendChild(titleDiv);
 
-        // 가수 이름 (마퀴 효과 적용)
         const artistDiv = document.createElement('div');
         artistDiv.className = 'artist-name';
         const artistSpan = document.createElement('span');
@@ -220,6 +217,17 @@ function renderSongList() {
         }
 
         songListContainer.appendChild(songEntryDiv);
+
+        // --- 마퀴 효과를 위한 오버플로우 감지 (렌더링 후 실행) ---
+        // setTimeout을 사용하여 DOM에 추가된 후 너비 계산
+        setTimeout(() => {
+            if (titleDiv.scrollWidth > titleDiv.clientWidth) {
+                titleDiv.classList.add('overflowing-text');
+            }
+            if (artistDiv.scrollWidth > artistDiv.clientWidth) {
+                artistDiv.classList.add('overflowing-text');
+            }
+        }, 0);
     });
 }
 
