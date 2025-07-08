@@ -218,14 +218,19 @@ function renderSongList() {
 
         songListContainer.appendChild(songEntryDiv);
 
-        // --- 마퀴 효과를 위한 오버플로우 감지 (렌더링 후 실행) ---
-        // setTimeout을 사용하여 DOM에 추가된 후 너비 계산
+        // 마퀴 효과를 위한 오버플로우 감지 (렌더링 후 실행)
+        // DOM에 추가된 후 너비 계산이 정확하도록 setTimeout 사용
         setTimeout(() => {
+            // scrollWidth > clientWidth 이면 텍스트가 넘침
             if (titleDiv.scrollWidth > titleDiv.clientWidth) {
                 titleDiv.classList.add('overflowing-text');
+            } else {
+                titleDiv.classList.remove('overflowing-text'); // 넘치지 않으면 클래스 제거
             }
             if (artistDiv.scrollWidth > artistDiv.clientWidth) {
                 artistDiv.classList.add('overflowing-text');
+            } else {
+                artistDiv.classList.remove('overflowing-text'); // 넘치지 않으면 클래스 제거
             }
         }, 0);
     });
