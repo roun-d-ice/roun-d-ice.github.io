@@ -334,20 +334,6 @@ function openYoutubePopup(youtubeUrl, songInfo) {
     modalContent.appendChild(closeButton);
     modalContent.appendChild(youtubeIframe);
 
-    // --- 제거된 부분 시작 ---
-    // const youtubeLinkDiv = document.createElement('div');
-    // youtubeLinkDiv.style.marginTop = '15px';
-    // youtubeLinkDiv.style.textAlign = 'center';
-    // const youtubeLink = document.createElement('a');
-    // youtubeLink.href = youtubeUrl;
-    // youtubeLink.target = '_blank';
-    // youtubeLink.textContent = '이 영상이 재생되지 않으면 YouTube에서 시청하세요.';
-    // youtubeLink.style.color = '#007bff';
-    // youtubeLink.style.textDecoration = 'underline';
-    // youtubeLinkDiv.appendChild(youtubeLink);
-    // modalContent.appendChild(youtubeLinkDiv);
-    // --- 제거된 부분 끝 ---
-
     modalOverlay.appendChild(modalContent);
     document.body.appendChild(modalOverlay);
 
