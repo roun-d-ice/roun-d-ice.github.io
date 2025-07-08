@@ -4,10 +4,11 @@ const API_KEY = 'AIzaSyDA0sqk1w-v-TOoiTSVpeN-nDu-4tWqJGg';
 const SPREADSHEET_ID = '15Vkcebz289pU-sKzDGm9ETFfvbZiuG1VYTLcHST-CLw';
 
 // 각 시트의 이름을 배열로 정의 (구글 시트 탭 이름과 정확히 일치)
-const SHEET_NAMES = ['a', 'b', 'c']; // 시트 이름을 'a', 'b', 'c'로 변경했습니다.
+const SHEET_NAMES = ['a', 'b', 'c']; // 'a', 'b', 'c'가 K-POP, POP, J-POP에 해당한다고 가정
 
 // 불러온 데이터를 저장할 전역 변수
 let categorizedSongs = {};
+let allLoadedSongs = []; // 모든 노래를 통합하여 저장할 배열
 let allSongsById = {};
 
 // Google API 클라이언트 라이브러리 초기화
@@ -47,6 +48,12 @@ async function loadSongsFromGoogleSheet() {
                         song[header] = row[index];
                     });
                     if (!song.youtubeurl) song.youtubeurl = '';
+                    // 각 노래에 카테고리 정보 추가
+                    let category = '';
+                    if (sheetName === 'a') category = 'K-POP';
+                    else if (sheetName === 'b') category = 'POP';
+                    else if (sheetName === 'c') category = 'J-POP';
+                    song.category = category;
                     return song;
                 });
                 fetchedData[sheetName] = songs;
@@ -63,7 +70,7 @@ async function loadSongsFromGoogleSheet() {
 }
 
 const refreshButton = document.getElementById('refreshButton');
-const cooldownTimerSpan = document.getElementById('cooldownTimer');
+const cooldownTimerSpan = document.getElementById('cooldownTimer'); // 이 요소는 이제 사용되지 않음
 const COOLDOWN_SECONDS = 60;
 let cooldownInterval;
 
@@ -71,16 +78,16 @@ async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
         let remainingTime = COOLDOWN_SECONDS;
-        refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`; // 버튼 텍스트 변경
+        refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`;
 
         cooldownInterval = setInterval(() => {
             remainingTime--;
             if (remainingTime <= 0) {
                 clearInterval(cooldownInterval);
                 refreshButton.disabled = false;
-                refreshButton.textContent = '노래 목록 최신화'; // 원래 텍스트 복원
+                refreshButton.textContent = '노래 목록 최신화';
             } else {
-                refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`; // 남은 시간 표시
+                refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`;
             }
         }, 1000);
     }
@@ -89,10 +96,17 @@ async function refreshSongList(isInitialLoad = false) {
         const data = await loadSongsFromGoogleSheet();
         categorizedSongs = data;
 
-        displayCategorizedSongs('K-POP', categorizedSongs['a'] || []);
-        displayCategorizedSongs('POP', categorizedSongs['b'] || []);
-        displayCategorizedSongs('J-POP', categorizedSongs['c'] || []);
+        // 모든 노래를 allLoadedSongs 배열에 통합
+        allLoadedSongs = [];
+        SHEET_NAMES.forEach(sheetName => {
+            if (categorizedSongs[sheetName]) {
+                allLoadedSongs.push(...categorizedSongs[sheetName]);
+            }
+        });
 
+        // '노래 목록' 탭의 노래를 렌더링
+        renderSongList();
+        // '랜덤 노래방' 탭의 노래를 섞고 총 곡수 업데이트
         shuffleSongNumbers();
     } catch (error) {
         console.error("노래 목록을 불러오는 중 오류 발생:", error);
@@ -100,7 +114,7 @@ async function refreshSongList(isInitialLoad = false) {
     } finally {
         if (isInitialLoad) {
             refreshButton.disabled = false;
-            refreshButton.textContent = '노래 목록 최신화'; // 초기 로드 시 텍스트 복원
+            refreshButton.textContent = '노래 목록 최신화';
         }
     }
 }
@@ -113,10 +127,27 @@ function showTab(tabId) {
 
     document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
     document.getElementById(tabId).classList.add('active');
+
+    // '노래 목록' 탭이 활성화될 때 노래 목록을 다시 렌더링
+    if (tabId === 'songList') {
+        renderSongList();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    showTab('kpop');
+    // 초기 로드 시 '노래 목록' 탭 활성화
+    showTab('songList');
+
+    // 검색창과 카테고리 필터 이벤트 리스너
+    const searchBar = document.getElementById('searchBar');
+    const categoryFilter = document.getElementById('categoryFilter');
+
+    if (searchBar) {
+        searchBar.addEventListener('input', renderSongList);
+    }
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', renderSongList);
+    }
 });
 
 // 유튜브 URL에서 ID 추출하는 헬퍼 함수
@@ -127,24 +158,40 @@ function extractYoutubeId(url) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
-function displayCategorizedSongs(categoryName, songs) {
-    const normalizedCategory = categoryName.toLowerCase().replace(/-/g, '');
-    const listElementId = `${normalizedCategory}-list`;
-    const listContainer = document.getElementById(listElementId);
-    if (!listContainer) {
-        console.error(`요소를 찾을 수 없습니다: ${listElementId}`);
+// 노래 목록을 필터링하고 표시하는 함수
+function renderSongList() {
+    const searchBar = document.getElementById('searchBar');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const songListContainer = document.getElementById('combined-song-list');
+
+    if (!songListContainer) return;
+
+    const searchTerm = searchBar ? searchBar.value.toLowerCase() : '';
+    const selectedCategory = categoryFilter ? categoryFilter.value : '전체';
+
+    let filteredSongs = allLoadedSongs.filter(song => {
+        // 카테고리 필터링
+        const categoryMatch = selectedCategory === '전체' || song.category === selectedCategory;
+
+        // 검색어 필터링 (제목 또는 가수, 대소문자 구분 없음)
+        const searchMatch = searchTerm === '' ||
+                            (song.title && song.title.toLowerCase().includes(searchTerm)) ||
+                            (song.artist && song.artist.toLowerCase().includes(searchTerm));
+
+        return categoryMatch && searchMatch;
+    });
+
+    // 제목이 비어있지 않은 노래만 표시
+    filteredSongs = filteredSongs.filter(song => song.title && song.title.trim() !== '');
+
+    songListContainer.innerHTML = ''; // 기존 목록 초기화
+
+    if (filteredSongs.length === 0) {
+        songListContainer.innerHTML = '<p>노래 목록이 없습니다.</p>';
         return;
     }
-    listContainer.innerHTML = '';
 
-    const songsToDisplay = songs.filter(song => song.title && song.title.trim() !== '');
-
-    if (songsToDisplay.length === 0) {
-        listContainer.innerHTML = '<p>노래 목록이 없습니다.</p>';
-        return;
-    }
-
-    songsToDisplay.forEach(song => {
+    filteredSongs.forEach(song => {
         const songEntryDiv = document.createElement('div');
         songEntryDiv.className = 'song-entry';
 
@@ -160,7 +207,7 @@ function displayCategorizedSongs(categoryName, songs) {
             songEntryDiv.style.cursor = 'default';
         }
 
-        listContainer.appendChild(songEntryDiv);
+        songListContainer.appendChild(songEntryDiv);
     });
 }
 
@@ -211,11 +258,10 @@ function findAndPlaySong() {
 
     if (song) {
         currentSongDisplay.innerHTML = `<strong>${inputNumber}. ${song.artist}</strong> - ${song.title}`;
-        youtubePlayerDiv.innerHTML = ''; // 기존 플레이어/메시지 비움
+        youtubePlayerDiv.innerHTML = '';
 
         const youtubeId = extractYoutubeId(song.youtubeurl);
         if (youtubeId) {
-            // 재생 버튼 생성
             const playButton = document.createElement('button');
             playButton.className = 'play-button';
             playButton.textContent = '재생';
@@ -266,19 +312,17 @@ function openYoutubePopup(youtubeUrl, songInfo) {
     modalContent.appendChild(closeButton);
     modalContent.appendChild(youtubeIframe);
 
-    // --- 추가된 부분: 유튜브 시청 링크 ---
     const youtubeLinkDiv = document.createElement('div');
     youtubeLinkDiv.style.marginTop = '15px';
     youtubeLinkDiv.style.textAlign = 'center';
     const youtubeLink = document.createElement('a');
-    youtubeLink.href = youtubeUrl; // 원본 youtubeUrl 사용
-    youtubeLink.target = '_blank'; // 새 탭에서 열기
+    youtubeLink.href = youtubeUrl;
+    youtubeLink.target = '_blank';
     youtubeLink.textContent = '이 영상이 재생되지 않으면 YouTube에서 시청하세요.';
-    youtubeLink.style.color = '#007bff'; // 링크 색상
-    youtubeLink.style.textDecoration = 'underline'; // 밑줄
+    youtubeLink.style.color = '#007bff';
+    youtubeLink.style.textDecoration = 'underline';
     youtubeLinkDiv.appendChild(youtubeLink);
     modalContent.appendChild(youtubeLinkDiv);
-    // --- 추가된 부분 끝 ---
 
     modalOverlay.appendChild(modalContent);
     document.body.appendChild(modalOverlay);
