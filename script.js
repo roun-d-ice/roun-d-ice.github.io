@@ -218,25 +218,13 @@ function renderSongList() {
 
         songListContainer.appendChild(songEntryDiv);
 
-        // --- 마퀴 효과를 위한 오버플로우 감지 (렌더링 후 실행) ---
-        // setTimeout을 사용하여 DOM에 추가된 후 너비 계산
         setTimeout(() => {
-            // 텍스트 스팬의 실제 너비
-            const titleTextWidth = titleSpan.offsetWidth;
-            const artistTextWidth = artistSpan.offsetWidth;
-
-            // 부모 컨테이너의 보이는 너비
-            const titleContainerWidth = titleDiv.clientWidth;
-            const artistContainerWidth = artistDiv.clientWidth;
-
-            // 텍스트가 컨테이너를 넘치는지 확인
-            if (titleTextWidth > titleContainerWidth) {
+            if (titleDiv.scrollWidth > titleDiv.clientWidth) {
                 titleDiv.classList.add('overflowing-text');
             } else {
                 titleDiv.classList.remove('overflowing-text');
             }
-
-            if (artistTextWidth > artistContainerWidth) {
+            if (artistDiv.scrollWidth > artistDiv.clientWidth) {
                 artistDiv.classList.add('overflowing-text');
             } else {
                 artistDiv.classList.remove('overflowing-text');
@@ -346,17 +334,19 @@ function openYoutubePopup(youtubeUrl, songInfo) {
     modalContent.appendChild(closeButton);
     modalContent.appendChild(youtubeIframe);
 
-    const youtubeLinkDiv = document.createElement('div');
-    youtubeLinkDiv.style.marginTop = '15px';
-    youtubeLinkDiv.style.textAlign = 'center';
-    const youtubeLink = document.createElement('a');
-    youtubeLink.href = youtubeUrl;
-    youtubeLink.target = '_blank';
-    youtubeLink.textContent = '이 영상이 재생되지 않으면 YouTube에서 시청하세요.';
-    youtubeLink.style.color = '#007bff';
-    youtubeLink.style.textDecoration = 'underline';
-    youtubeLinkDiv.appendChild(youtubeLink);
-    modalContent.appendChild(youtubeLinkDiv);
+    // --- 제거된 부분 시작 ---
+    // const youtubeLinkDiv = document.createElement('div');
+    // youtubeLinkDiv.style.marginTop = '15px';
+    // youtubeLinkDiv.style.textAlign = 'center';
+    // const youtubeLink = document.createElement('a');
+    // youtubeLink.href = youtubeUrl;
+    // youtubeLink.target = '_blank';
+    // youtubeLink.textContent = '이 영상이 재생되지 않으면 YouTube에서 시청하세요.';
+    // youtubeLink.style.color = '#007bff';
+    // youtubeLink.style.textDecoration = 'underline';
+    // youtubeLinkDiv.appendChild(youtubeLink);
+    // modalContent.appendChild(youtubeLinkDiv);
+    // --- 제거된 부분 끝 ---
 
     modalOverlay.appendChild(modalContent);
     document.body.appendChild(modalOverlay);
