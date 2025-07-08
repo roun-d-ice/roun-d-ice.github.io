@@ -34,9 +34,10 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
+            // A열부터 D열까지 (artist, title, youtubeUrl, albumCoverUrl 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
-                range: `${sheetName}!A:C`,
+                range: `${sheetName}!A:D`, // A:D로 범위 확장
             });
 
             const values = response.result.values;
@@ -48,6 +49,7 @@ async function loadSongsFromGoogleSheet() {
                         song[header] = row[index];
                     });
                     if (!song.youtubeurl) song.youtubeurl = '';
+                    if (!song.albumcoverurl) song.albumcoverurl = ''; // albumCoverUrl 추가
                     // 각 노래에 카테고리 정보 추가
                     let category = '';
                     if (sheetName === 'a') category = 'K-POP';
@@ -70,7 +72,6 @@ async function loadSongsFromGoogleSheet() {
 }
 
 const refreshButton = document.getElementById('refreshButton');
-const cooldownTimerSpan = document.getElementById('cooldownTimer'); // 이 요소는 이제 사용되지 않음
 const COOLDOWN_SECONDS = 60;
 let cooldownInterval;
 
@@ -96,7 +97,6 @@ async function refreshSongList(isInitialLoad = false) {
         const data = await loadSongsFromGoogleSheet();
         categorizedSongs = data;
 
-        // 모든 노래를 allLoadedSongs 배열에 통합
         allLoadedSongs = [];
         SHEET_NAMES.forEach(sheetName => {
             if (categorizedSongs[sheetName]) {
@@ -104,10 +104,8 @@ async function refreshSongList(isInitialLoad = false) {
             }
         });
 
-        // '노래 목록' 탭의 노래를 렌더링
-        renderSongList();
-        // '랜덤 노래방' 탭의 노래를 섞고 총 곡수 업데이트
-        shuffleSongNumbers();
+        renderSongList(); // '노래 목록' 탭의 노래를 렌더링
+        shuffleSongNumbers(); // '랜덤 노래방' 탭의 노래를 섞고 총 곡수 업데이트
     } catch (error) {
         console.error("노래 목록을 불러오는 중 오류 발생:", error);
         alert("노래 목록을 불러오는 데 실패했습니다. API 키, 스프레드시트 ID, 시트 이름, 또는 네트워크 연결을 확인해주세요.");
@@ -128,17 +126,14 @@ function showTab(tabId) {
     document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
     document.getElementById(tabId).classList.add('active');
 
-    // '노래 목록' 탭이 활성화될 때 노래 목록을 다시 렌더링
     if (tabId === 'songList') {
         renderSongList();
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 초기 로드 시 '노래 목록' 탭 활성화
     showTab('songList');
 
-    // 검색창과 카테고리 필터 이벤트 리스너
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
 
@@ -150,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 유튜브 URL에서 ID 추출하는 헬퍼 함수
 function extractYoutubeId(url) {
     if (!url || typeof url !== 'string') return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -158,7 +152,7 @@ function extractYoutubeId(url) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
-// 노래 목록을 필터링하고 표시하는 함수
+// 노래 목록을 필터링하고 표시하는 함수 (이전 displayCategorizedSongs 역할)
 function renderSongList() {
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
@@ -170,10 +164,8 @@ function renderSongList() {
     const selectedCategory = categoryFilter ? categoryFilter.value : '전체';
 
     let filteredSongs = allLoadedSongs.filter(song => {
-        // 카테고리 필터링
         const categoryMatch = selectedCategory === '전체' || song.category === selectedCategory;
 
-        // 검색어 필터링 (제목 또는 가수, 대소문자 구분 없음)
         const searchMatch = searchTerm === '' ||
                             (song.title && song.title.toLowerCase().includes(searchTerm)) ||
                             (song.artist && song.artist.toLowerCase().includes(searchTerm));
@@ -181,10 +173,9 @@ function renderSongList() {
         return categoryMatch && searchMatch;
     });
 
-    // 제목이 비어있지 않은 노래만 표시
     filteredSongs = filteredSongs.filter(song => song.title && song.title.trim() !== '');
 
-    songListContainer.innerHTML = ''; // 기존 목록 초기화
+    songListContainer.innerHTML = '';
 
     if (filteredSongs.length === 0) {
         songListContainer.innerHTML = '<p>노래 목록이 없습니다.</p>';
@@ -195,9 +186,30 @@ function renderSongList() {
         const songEntryDiv = document.createElement('div');
         songEntryDiv.className = 'song-entry';
 
-        const songInfoSpan = document.createElement('span');
-        songInfoSpan.innerHTML = `<strong>${song.artist}</strong> - ${song.title}`;
-        songEntryDiv.appendChild(songInfoSpan);
+        // 앨범 자켓 이미지
+        const albumCoverImg = document.createElement('img');
+        albumCoverImg.className = 'album-cover';
+        albumCoverImg.src = song.albumcoverurl || 'https://via.placeholder.com/150?text=No+Cover'; // 기본 이미지
+        albumCoverImg.alt = `${song.title} 앨범 자켓`;
+        songEntryDiv.appendChild(albumCoverImg);
+
+        // 노래 제목 (마퀴 효과 적용)
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'song-title';
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'song-title-text';
+        titleSpan.textContent = song.title;
+        titleDiv.appendChild(titleSpan);
+        songEntryDiv.appendChild(titleDiv);
+
+        // 가수 이름 (마퀴 효과 적용)
+        const artistDiv = document.createElement('div');
+        artistDiv.className = 'artist-name';
+        const artistSpan = document.createElement('span');
+        artistSpan.className = 'artist-name-text';
+        artistSpan.textContent = song.artist;
+        artistDiv.appendChild(artistSpan);
+        songEntryDiv.appendChild(artistDiv);
 
         const youtubeId = extractYoutubeId(song.youtubeurl);
         if (youtubeId) {

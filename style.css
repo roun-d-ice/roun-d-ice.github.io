@@ -84,8 +84,8 @@ button:disabled {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
-    flex-grow: 1; /* 남은 공간을 채우도록 */
-    max-width: 400px; /* 최대 너비 제한 */
+    flex-grow: 1;
+    max-width: 400px;
 }
 #categoryFilter {
     padding: 10px;
@@ -96,27 +96,88 @@ button:disabled {
     cursor: pointer;
 }
 
+/* --- 노래 목록 그리드 컨테이너 --- */
 .song-list {
+    display: grid; /* 그리드 레이아웃 */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 반응형 컬럼 */
+    gap: 20px; /* 카드 사이 간격 */
     border: 1px solid #eee;
-    padding: 10px;
-    max-height: 400px;
+    padding: 20px;
+    max-height: 600px; /* 높이 제한 */
     overflow-y: auto;
     background-color: #fdfdfd;
     border-radius: 5px;
 }
-/* 노래 목록 항목 스타일 (클래스명 변경) */
+
+/* --- 노래 카드 항목 스타일 --- */
 .song-entry {
-    padding: 8px 0;
-    border-bottom: 1px dashed #eee;
-    cursor: pointer;
-    display: flex; /* 버튼과 텍스트를 한 줄에 표시 */
-    align-items: center; /* 세로 정렬 */
-}
-.song-entry:last-child {
-    border-bottom: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer; /* 클릭 가능함을 나타냄 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .song-entry:hover {
-    background-color: #e0e0e0;
+    transform: translateY(-5px); /* 호버 시 살짝 위로 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* 앨범 자켓 이미지 */
+.song-entry img.album-cover {
+    width: 100%;
+    height: auto; /* 높이는 자동으로 */
+    aspect-ratio: 1 / 1; /* 정사각형 유지 */
+    object-fit: cover; /* 이미지가 잘리더라도 비율 유지 */
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+/* --- 제목/가수명 오버플로우 마퀴 효과 --- */
+.song-title, .artist-name {
+    width: 100%; /* 부모 너비에 맞춤 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+    text-overflow: ellipsis; /* 넘칠 때 ... 표시 */
+    position: relative; /* 텍스트 스크롤을 위한 기준점 */
+}
+
+.song-title-text, .artist-name-text {
+    display: inline-block; /* 텍스트 스크롤을 위해 inline-block */
+    padding-right: 100%; /* 텍스트가 끝까지 스크롤되도록 */
+    animation-play-state: paused; /* 기본적으로 애니메이션 정지 */
+}
+
+.song-entry:hover .song-title-text,
+.song-entry:hover .artist-name-text {
+    animation-play-state: running; /* 호버 시 애니메이션 시작 */
+    animation-name: marquee;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 5s; /* 기본 애니메이션 시간 (조절 가능) */
+}
+
+/* 마퀴 애니메이션 키프레임 */
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-100% - 10px)); } /* 텍스트 너비만큼 왼쪽으로 이동 */
+}
+
+/* 텍스트 스타일 */
+.song-title {
+    font-weight: bold;
+    font-size: 0.95em;
+    color: #333;
+    margin-bottom: 4px;
+}
+.artist-name {
+    font-size: 0.85em;
+    color: #666;
 }
 
 .number-input-section {
@@ -157,7 +218,7 @@ button:disabled {
     font-size: 1.1em;
     line-height: 1;
     margin-left: 10px;
-    background-color: #007bff; /* 파란색 계열로 변경 */
+    background-color: #007bff;
     color: white;
     border-radius: 3px;
     cursor: pointer;
