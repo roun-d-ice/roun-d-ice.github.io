@@ -71,7 +71,7 @@ async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
         let remainingTime = COOLDOWN_SECONDS;
-        refreshButton.textContent = `(${remainingTime}초 후 가능)`; // 버튼 텍스트 변경
+        refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`; // 버튼 텍스트 변경
 
         cooldownInterval = setInterval(() => {
             remainingTime--;
@@ -80,7 +80,7 @@ async function refreshSongList(isInitialLoad = false) {
                 refreshButton.disabled = false;
                 refreshButton.textContent = '노래 목록 최신화'; // 원래 텍스트 복원
             } else {
-                refreshButton.textContent = `(${remainingTime}초 후 가능)`; // 남은 시간 표시
+                refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`; // 남은 시간 표시
             }
         }, 1000);
     }
@@ -218,7 +218,7 @@ function findAndPlaySong() {
             // 재생 버튼 생성
             const playButton = document.createElement('button');
             playButton.className = 'play-button';
-            playButton.textContent = '재생'; // 버튼 텍스트
+            playButton.textContent = '재생';
             playButton.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
             youtubePlayerDiv.appendChild(playButton);
         } else {
@@ -265,8 +265,22 @@ function openYoutubePopup(youtubeUrl, songInfo) {
 
     modalContent.appendChild(closeButton);
     modalContent.appendChild(youtubeIframe);
-    modalOverlay.appendChild(modalContent);
 
+    // --- 추가된 부분: 유튜브 시청 링크 ---
+    const youtubeLinkDiv = document.createElement('div');
+    youtubeLinkDiv.style.marginTop = '15px';
+    youtubeLinkDiv.style.textAlign = 'center';
+    const youtubeLink = document.createElement('a');
+    youtubeLink.href = youtubeUrl; // 원본 youtubeUrl 사용
+    youtubeLink.target = '_blank'; // 새 탭에서 열기
+    youtubeLink.textContent = '이 영상이 재생되지 않으면 YouTube에서 시청하세요.';
+    youtubeLink.style.color = '#007bff'; // 링크 색상
+    youtubeLink.style.textDecoration = 'underline'; // 밑줄
+    youtubeLinkDiv.appendChild(youtubeLink);
+    modalContent.appendChild(youtubeLinkDiv);
+    // --- 추가된 부분 끝 ---
+
+    modalOverlay.appendChild(modalContent);
     document.body.appendChild(modalOverlay);
 
     document.body.style.overflow = 'hidden';
