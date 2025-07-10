@@ -37,7 +37,7 @@ async function loadSongsFromGoogleSheet() {
             // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, difficulty 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
-                range: `${sheetName}!A:E`,
+                range: `${sheetName}!A:E`, // A:E로 범위 확장 (difficulty 포함)
             });
 
             const values = response.result.values;
@@ -50,7 +50,8 @@ async function loadSongsFromGoogleSheet() {
                     });
                     if (!song.youtubeurl) song.youtubeurl = '';
                     if (!song.albumcoverurl) song.albumcoverurl = '';
-                    if (!song.difficulty) song.difficulty = '';
+                    if (!song.difficulty) song.difficulty = ''; // difficulty 추가
+                    // 각 노래에 카테고리 정보 추가
                     let category = '';
                     if (sheetName === 'a') category = 'K-POP';
                     else if (sheetName === 'b') category = 'POP';
@@ -72,21 +73,24 @@ async function loadSongsFromGoogleSheet() {
 }
 
 const refreshButton = document.getElementById('refreshButton');
+const refreshStatusIcon = document.getElementById('refreshStatusIcon');
 const COOLDOWN_SECONDS = 60;
 let cooldownInterval;
 
 async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
+        refreshStatusIcon.textContent = '⟳'; // 아이콘을 ⟳로 변경 (회전하지 않음)
+        refreshStatusIcon.classList.remove('spinning-icon'); // 회전 클래스 제거
+
         let remainingTime = COOLDOWN_SECONDS;
-        refreshButton.textContent = `✔`;
 
         cooldownInterval = setInterval(() => {
             remainingTime--;
             if (remainingTime <= 0) {
                 clearInterval(cooldownInterval);
                 refreshButton.disabled = false;
-                refreshButton.textContent = '✔';
+                refreshStatusIcon.textContent = '✔';
             }
         }, 1000);
     }
@@ -110,7 +114,8 @@ async function refreshSongList(isInitialLoad = false) {
     } finally {
         if (isInitialLoad) {
             refreshButton.disabled = false;
-            refreshButton.textContent = '✔';
+            refreshStatusIcon.textContent = '✔';
+            refreshStatusIcon.classList.remove('spinning-icon');
         }
     }
 }
@@ -146,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (difficultyFilter) {
         difficultyFilter.addEventListener('change', renderSongList);
     }
+
     if (songNumberInput) {
         songNumberInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
@@ -199,13 +205,24 @@ function renderSongList() {
 
     filteredSongs = filteredSongs.filter(song => song.title && song.title.trim() !== '');
 
-    // 여기서 가수 이름 기준 오름차순 정렬 추가
+    // --- 정렬 로직 추가 ---
+    const categoryOrder = { 'K-POP': 1, 'POP': 2, 'J-POP': 3 }; // 카테고리 순서 정의
+
     filteredSongs.sort((a, b) => {
+        // 1. 카테고리 순서로 정렬
+        const categoryA = categoryOrder[a.category] || 99; // 정의되지 않은 카테고리는 뒤로
+        const categoryB = categoryOrder[b.category] || 99;
+
+        if (categoryA < categoryB) return -1;
+        if (categoryA > categoryB) return 1;
+
+        // 2. 같은 카테고리 내에서는 가수 이름으로 오름차순 정렬
         const artistA = (a.artist || '').toLowerCase();
         const artistB = (b.artist || '').toLowerCase();
         if (artistA < artistB) return -1;
         if (artistA > artistB) return 1;
-        return 0;
+
+        return 0; // 모든 조건이 같으면 순서 변경 없음
     });
 
     songListContainer.innerHTML = '';
