@@ -1,13 +1,13 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
-    background-color: #282c34; /* 어두운 배경 */
+    background-color: #0F0F0F; /* 배경색 변경 */
     color: #e0e0e0; /* 밝은 글씨 */
 }
 .container {
     max-width: 1040px;
     margin: 0 auto;
-    background-color: #282c34; /* body와 동일한 배경색으로 변경 */
+    background-color: #0F0F0F; /* body와 동일한 배경색으로 변경 */
     padding: 20px;
     border-radius: 8px; /* 둥근 모서리는 유지 */
     box-shadow: none; /* 그림자 제거 */
@@ -267,7 +267,7 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8); /* 더 어두운 오버레이 */
     display: flex;
     justify-content: center;
     align-items: center;
