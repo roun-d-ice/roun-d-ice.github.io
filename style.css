@@ -38,11 +38,7 @@ button:disabled {
     color: #888; /* 비활성화 버튼 글씨색 */
     cursor: not-allowed;
 }
-#cooldownTimer {
-    margin-left: 10px;
-    color: #b0b0b0; /* 시간 글씨색 */
-    font-size: 0.9em;
-}
+/* #cooldownTimer 제거 */
 .tabs {
     display: flex;
     justify-content: center;
@@ -99,6 +95,17 @@ button:disabled {
     color: #e0e0e0; /* 입력창 글씨 */
     cursor: pointer;
     width: 140px; /* 가로 길이 10px 증가 (130px -> 140px) */
+}
+
+/* --- 노래목록 최신화 버튼 스타일 (수정) --- */
+#refreshButton {
+    width: 60px;  /* 기존 120px에서 절반인 60px로 줄임 */
+    height: 36px; /* 높이는 유지 */
+    font-size: 20px; /* ✔ 이모지가 잘 보이도록 폰트 크기 키움 */
+    padding: 0; /* 패딩 제거 (✔가 버튼 중앙에 오도록) */
+    display: flex; /* ✔를 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
 }
 
 .song-list {
