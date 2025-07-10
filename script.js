@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
-    const difficultyFilter = document.getElementById('difficultyFilter'); // 난이도 필터 추가
+    const difficultyFilter = document.getElementById('difficultyFilter');
 
     if (searchBar) {
         searchBar.addEventListener('input', renderSongList);
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (categoryFilter) {
         categoryFilter.addEventListener('change', renderSongList);
     }
-    if (difficultyFilter) { // 난이도 필터 이벤트 리스너 추가
+    if (difficultyFilter) {
         difficultyFilter.addEventListener('change', renderSongList);
     }
 });
@@ -157,15 +157,12 @@ function extractYoutubeId(url) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
-// 별점 문자열 생성 함수
+// 별점 문자열 생성 함수 (채워진 별만 표시)
 function getStarRating(rating) {
     const fullStar = '★';
-    const emptyStar = '☆';
-    const maxRating = 5;
-
     let stars = '';
-    for (let i = 0; i < maxRating; i++) {
-        stars += (i < rating) ? fullStar : emptyStar;
+    for (let i = 0; i < rating; i++) { // rating 횟수만큼만 반복
+        stars += fullStar;
     }
     return stars;
 }
@@ -175,19 +172,18 @@ function getStarRating(rating) {
 function renderSongList() {
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
-    const difficultyFilter = document.getElementById('difficultyFilter'); // 난이도 필터 요소
+    const difficultyFilter = document.getElementById('difficultyFilter');
     const songListContainer = document.getElementById('combined-song-list');
 
     if (!songListContainer) return;
 
     const searchTerm = searchBar ? searchBar.value.toLowerCase() : '';
     const selectedCategory = categoryFilter ? categoryFilter.value : '전체';
-    const selectedDifficulty = difficultyFilter ? difficultyFilter.value : '전체'; // 선택된 난이도
+    const selectedDifficulty = difficultyFilter ? difficultyFilter.value : '전체';
 
     let filteredSongs = allLoadedSongs.filter(song => {
         const categoryMatch = selectedCategory === '전체' || song.category === selectedCategory;
 
-        // 난이도 필터링
         const difficultyMatch = selectedDifficulty === '전체' ||
                                 (song.difficulty && parseInt(song.difficulty) === parseInt(selectedDifficulty));
 
@@ -195,7 +191,7 @@ function renderSongList() {
                             (song.title && song.title.toLowerCase().includes(searchTerm)) ||
                             (song.artist && song.artist.toLowerCase().includes(searchTerm));
 
-        return categoryMatch && difficultyMatch && searchMatch; // 난이도 필터 조건 추가
+        return categoryMatch && difficultyMatch && searchMatch;
     });
 
     filteredSongs = filteredSongs.filter(song => song.title && song.title.trim() !== '');
@@ -233,7 +229,6 @@ function renderSongList() {
         artistDiv.appendChild(artistSpan);
         songEntryDiv.appendChild(artistDiv);
 
-        // 난이도 별점 표시
         if (song.difficulty && parseInt(song.difficulty) >= 1 && parseInt(song.difficulty) <= 5) {
             const difficultyDiv = document.createElement('div');
             difficultyDiv.className = 'difficulty-rating';
@@ -253,12 +248,19 @@ function renderSongList() {
         songListContainer.appendChild(songEntryDiv);
 
         setTimeout(() => {
-            if (titleDiv.scrollWidth > titleDiv.clientWidth) {
+            const titleTextWidth = titleSpan.offsetWidth;
+            const artistTextWidth = artistSpan.offsetWidth;
+
+            const titleContainerWidth = titleDiv.clientWidth;
+            const artistContainerWidth = artistDiv.clientWidth;
+
+            if (titleTextWidth > titleContainerWidth) {
                 titleDiv.classList.add('overflowing-text');
             } else {
                 titleDiv.classList.remove('overflowing-text');
             }
-            if (artistDiv.scrollWidth > artistDiv.clientWidth) {
+
+            if (artistTextWidth > artistContainerWidth) {
                 artistDiv.classList.add('overflowing-text');
             } else {
                 artistDiv.classList.remove('overflowing-text');
