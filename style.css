@@ -108,7 +108,7 @@ button:disabled {
     align-items: center;
 }
 
-/* --- @keyframes spin 정의는 유지 --- */
+/* --- @keyframes spin 정의는 유지 (다른 곳에서 사용될 수도 있으므로) --- */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -121,7 +121,7 @@ button:disabled {
     transform-origin: center center; /* 회전 중심을 명확히 중앙으로 설정 */
 }
 
-/* --- 수정된 부분: spinning-icon 클래스 정의 자체를 제거 --- */
+/* --- spinning-icon 클래스 정의 자체를 제거 (이제 필요 없음) --- */
 
 .song-list {
     display: grid;

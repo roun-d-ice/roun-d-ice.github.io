@@ -80,8 +80,8 @@ let cooldownInterval;
 async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
-        refreshStatusIcon.textContent = '⟳'; // 아이콘을 회전 화살표로 변경
-        refreshStatusIcon.classList.remove('spinning-icon'); // 회전 클래스 제거
+        refreshStatusIcon.textContent = '⟳'; // 아이콘을 ⟳로 변경 (회전하지 않음)
+        refreshStatusIcon.classList.remove('spinning-icon'); // 혹시 모를 회전 클래스 제거
 
         let remainingTime = COOLDOWN_SECONDS;
         // 남은 시간 표시 문구는 제거되므로, 버튼 텍스트는 ✔로 유지
