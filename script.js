@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
     const difficultyFilter = document.getElementById('difficultyFilter');
-    const songNumberInput = document.getElementById('songNumberInput'); // 랜덤 노래방 입력창
+    const songNumberInput = document.getElementById('songNumberInput');
 
     if (searchBar) {
         searchBar.addEventListener('input', renderSongList);
@@ -150,12 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
         difficultyFilter.addEventListener('change', renderSongList);
     }
 
-    // --- 랜덤 노래방 입력창 엔터 키 이벤트 ---
     if (songNumberInput) {
         songNumberInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') { // 'Enter' 키가 눌렸을 때
-                event.preventDefault(); // 기본 동작 (폼 제출 등) 방지
-                findAndPlaySong(); // 찾기 함수 호출
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                findAndPlaySong();
             }
         });
     }
@@ -170,7 +169,7 @@ function extractYoutubeId(url) {
 
 // 별점 문자열 생성 함수 (채워진 별만 표시)
 function getStarRating(rating) {
-    const fullStar = '★';
+    const fullStar = '⭐'; // 별 이모지로 변경
     let stars = '';
     for (let i = 0; i < rating; i++) {
         stars += fullStar;
