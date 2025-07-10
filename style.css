@@ -108,7 +108,7 @@ button:disabled {
     align-items: center;
 }
 
-/* --- 새로 추가된 스타일: 아이콘 회전 애니메이션 --- */
+/* --- @keyframes spin 정의는 유지 --- */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -118,12 +118,10 @@ button:disabled {
     font-size: 20px; /* 아이콘 크기 */
     display: inline-block; /* 회전을 위해 필요 */
     vertical-align: middle; /* 아이콘 수직 정렬 조정 */
-}
-
-.spinning-icon {
-    animation: spin 1s linear infinite; /* 1초 동안 선형으로 무한 반복 */
     transform-origin: center center; /* 회전 중심을 명확히 중앙으로 설정 */
 }
+
+/* --- 수정된 부분: spinning-icon 클래스 정의 자체를 제거 --- */
 
 .song-list {
     display: grid;
