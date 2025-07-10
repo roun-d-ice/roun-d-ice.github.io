@@ -117,10 +117,12 @@ button:disabled {
 #refreshStatusIcon {
     font-size: 20px; /* 아이콘 크기 */
     display: inline-block; /* 회전을 위해 필요 */
+    vertical-align: middle; /* 아이콘 수직 정렬 조정 */
 }
 
 .spinning-icon {
     animation: spin 1s linear infinite; /* 1초 동안 선형으로 무한 반복 */
+    transform-origin: center center; /* 회전 중심을 명확히 중앙으로 설정 */
 }
 
 .song-list {
