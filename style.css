@@ -17,7 +17,9 @@ h1, h2 {
     text-align: center;
 }
 .controls {
-    text-align: right;
+    /* --- 수정된 부분: Flexbox 적용 --- */
+    display: flex;
+    justify-content: flex-end; /* 내용을 오른쪽 끝으로 정렬 */
     margin-bottom: 20px;
 }
 button {
@@ -38,7 +40,11 @@ button:disabled {
     color: #888; /* 비활성화 버튼 글씨색 */
     cursor: not-allowed;
 }
-/* #cooldownTimer 제거 */
+#cooldownTimer {
+    margin-left: 10px;
+    color: #b0b0b0; /* 시간 글씨색 */
+    font-size: 0.9em;
+}
 .tabs {
     display: flex;
     justify-content: center;
