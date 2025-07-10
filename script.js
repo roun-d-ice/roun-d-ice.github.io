@@ -34,7 +34,7 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
-            // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, difficulty 순서라고 가정)
+            // A열부터 D열까지 (artist, title, youtubeUrl, albumCoverUrl 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
                 range: `${sheetName}!A:E`, // A:E로 범위 확장 (difficulty 포함)
@@ -81,7 +81,7 @@ async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
         refreshStatusIcon.textContent = '⟳'; // 아이콘을 ⟳로 변경 (회전하지 않음)
-        refreshStatusIcon.classList.remove('spinning-icon'); // 회전 클래스 제거
+        // refreshStatusIcon.classList.remove('spinning-icon'); // 이 줄이 회전을 멈추게 합니다.
 
         let remainingTime = COOLDOWN_SECONDS;
 
@@ -90,7 +90,10 @@ async function refreshSongList(isInitialLoad = false) {
             if (remainingTime <= 0) {
                 clearInterval(cooldownInterval);
                 refreshButton.disabled = false;
-                refreshStatusIcon.textContent = '✔';
+                refreshStatusIcon.textContent = '✔'; // 아이콘을 ✔로 복원
+                // refreshStatusIcon.classList.remove('spinning-icon'); // 이미 멈춰있으므로 제거할 필요 없음
+            } else {
+                // 남은 시간 표시 문구는 제거되므로, 버튼 텍스트는 ✔로 유지
             }
         }, 1000);
     }
@@ -115,7 +118,7 @@ async function refreshSongList(isInitialLoad = false) {
         if (isInitialLoad) {
             refreshButton.disabled = false;
             refreshStatusIcon.textContent = '✔';
-            refreshStatusIcon.classList.remove('spinning-icon');
+            // refreshStatusIcon.classList.remove('spinning-icon');
         }
     }
 }
@@ -205,24 +208,21 @@ function renderSongList() {
 
     filteredSongs = filteredSongs.filter(song => song.title && song.title.trim() !== '');
 
-    // --- 정렬 로직 추가 ---
-    const categoryOrder = { 'K-POP': 1, 'POP': 2, 'J-POP': 3 }; // 카테고리 순서 정의
+    const categoryOrder = { 'K-POP': 1, 'POP': 2, 'J-POP': 3 };
 
     filteredSongs.sort((a, b) => {
-        // 1. 카테고리 순서로 정렬
-        const categoryA = categoryOrder[a.category] || 99; // 정의되지 않은 카테고리는 뒤로
+        const categoryA = categoryOrder[a.category] || 99;
         const categoryB = categoryOrder[b.category] || 99;
 
         if (categoryA < categoryB) return -1;
         if (categoryA > categoryB) return 1;
 
-        // 2. 같은 카테고리 내에서는 가수 이름으로 오름차순 정렬
         const artistA = (a.artist || '').toLowerCase();
         const artistB = (b.artist || '').toLowerCase();
         if (artistA < artistB) return -1;
         if (artistA > artistB) return 1;
 
-        return 0; // 모든 조건이 같으면 순서 변경 없음
+        return 0;
     });
 
     songListContainer.innerHTML = '';
@@ -334,31 +334,83 @@ function shuffleSongNumbers() {
 function findAndPlaySong() {
     const inputNumber = parseInt(songNumberInput.value);
 
+    youtubePlayerDiv.innerHTML = ''; // 이전 내용 지우기
+    currentSongDisplay.textContent = ''; // 이전 메시지 지우기
+
     if (isNaN(inputNumber) || inputNumber <= 0) {
         currentSongDisplay.textContent = '유효한 노래 번호를 입력해주세요.';
-        youtubePlayerDiv.innerHTML = '';
         return;
     }
 
     const song = allSongsById[inputNumber];
 
     if (song) {
-        currentSongDisplay.innerHTML = `<strong>${inputNumber}. ${song.artist}</strong> - ${song.title}`;
-        youtubePlayerDiv.innerHTML = '';
+        currentSongDisplay.textContent = `${inputNumber}.`; // 노래 번호 표시
+
+        const songEntryDiv = document.createElement('div');
+        songEntryDiv.className = 'song-entry';
+
+        const albumCoverImg = document.createElement('img');
+        albumCoverImg.className = 'album-cover';
+        albumCoverImg.src = song.albumcoverurl || 'https://via.placeholder.com/150?text=No+Cover';
+        albumCoverImg.alt = `${song.title} 앨범 자켓`;
+        songEntryDiv.appendChild(albumCoverImg);
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'song-title';
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'song-title-text';
+        titleSpan.textContent = song.title;
+        titleDiv.appendChild(titleSpan);
+        songEntryDiv.appendChild(titleDiv);
+
+        const artistDiv = document.createElement('div');
+        artistDiv.className = 'artist-name';
+        const artistSpan = document.createElement('span');
+        artistSpan.className = 'artist-name-text';
+        artistSpan.textContent = song.artist;
+        artistDiv.appendChild(artistSpan);
+        songEntryDiv.appendChild(artistDiv);
+
+        if (song.difficulty && parseInt(song.difficulty) >= 1 && parseInt(song.difficulty) <= 5) {
+            const difficultyDiv = document.createElement('div');
+            difficultyDiv.className = 'difficulty-rating';
+            difficultyDiv.textContent = getStarRating(parseInt(song.difficulty));
+            songEntryDiv.appendChild(difficultyDiv);
+        }
 
         const youtubeId = extractYoutubeId(song.youtubeurl);
         if (youtubeId) {
-            const playButton = document.createElement('button');
-            playButton.className = 'play-button';
-            playButton.textContent = '재생';
-            playButton.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
-            youtubePlayerDiv.appendChild(playButton);
+            songEntryDiv.style.cursor = 'pointer';
+            songEntryDiv.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
         } else {
-            youtubePlayerDiv.innerHTML = '<p>이 노래는 YouTube ID가 없습니다.</p>';
+            songEntryDiv.style.cursor = 'default';
         }
+
+        youtubePlayerDiv.appendChild(songEntryDiv); // youtubePlayerDiv에 노래 카드 추가
+
+        setTimeout(() => {
+            const titleTextWidth = titleSpan.offsetWidth;
+            const artistTextWidth = artistSpan.offsetWidth;
+
+            const titleContainerWidth = titleDiv.clientWidth;
+            const artistContainerWidth = artistDiv.clientWidth;
+
+            if (titleTextWidth > titleContainerWidth) {
+                titleDiv.classList.add('overflowing-text');
+            } else {
+                titleDiv.classList.remove('overflowing-text');
+            }
+
+            if (artistTextWidth > artistContainerWidth) {
+                artistDiv.classList.add('overflowing-text');
+            } else {
+                artistDiv.classList.remove('overflowing-text');
+            }
+        }, 0);
+
     } else {
-        currentSongDisplay.textContent = '해당 번호의 노래를 찾을 수 없습니다.';
-        youtubePlayerDiv.innerHTML = '';
+        youtubePlayerDiv.innerHTML = '<p>해당 번호의 노래를 찾을 수 없습니다.</p>';
     }
 }
 

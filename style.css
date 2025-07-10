@@ -1,54 +1,53 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
-    background-color: #0F0F0F; /* 배경색 변경 */
-    color: #e0e0e0; /* 밝은 글씨 */
+    background-color: #0F0F0F;
+    color: #e0e0e0;
 }
 .container {
     max-width: 1040px;
     margin: 0 auto;
-    background-color: #0F0F0F; /* body와 동일한 배경색으로 변경 */
+    background-color: #0F0F0F;
     padding: 20px;
-    border-radius: 8px; /* 둥근 모서리는 유지 */
-    box-shadow: none; /* 그림자 제거 */
+    border-radius: 8px;
+    box-shadow: none;
 }
 h1, h2 {
-    color: #FF69B4; /* 핫핑크 계열 */
+    color: #FF69B4;
     text-align: center;
 }
 .controls {
     display: flex;
-    justify-content: flex-end; /* 내용을 오른쪽 끝으로 정렬 */
+    justify-content: flex-end;
     margin-bottom: 20px;
 }
 button {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #FF1493; /* 핫핑크 계열 */
-    color: #282c34; /* 버튼 글씨색 */
+    background-color: #FF1493;
+    color: #282c34;
     cursor: pointer;
     font-size: 16px;
     margin-left: 5px;
 }
 button:hover {
-    background-color: #C71585; /* 핫핑크 계열 호버 */
+    background-color: #C71585;
 }
 button:disabled {
-    background-color: #444; /* 비활성화 버튼 색상 */
-    color: #888; /* 비활성화 버튼 글씨색 */
+    background-color: #444;
+    color: #888;
     cursor: not-allowed;
 }
-/* #cooldownTimer 제거 */
 .tabs {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid #444; /* 탭 구분선 */
+    border-bottom: 1px solid #444;
 }
 .tab-button {
-    background-color: #3a3f47; /* 탭 버튼 기본 배경 */
-    color: #e0e0e0; /* 탭 버튼 기본 글씨 */
+    background-color: #3a3f47;
+    color: #e0e0e0;
     border-radius: 0;
     margin: 0;
     padding: 12px 20px;
@@ -56,9 +55,9 @@ button:disabled {
     border-top-right-radius: 5px;
 }
 .tab-button.active {
-    background-color: #FF1493; /* 활성 탭 배경 (핫핑크 계열) */
-    color: #282c34; /* 활성 탭 글씨 */
-    border-bottom: 3px solid #FF1493; /* 활성 탭 밑줄 (핫핑크 계열) */
+    background-color: #FF1493;
+    color: #282c34;
+    border-bottom: 3px solid #FF1493;
 }
 .tab-content {
     display: none;
@@ -68,7 +67,6 @@ button:disabled {
 .tab-content.active {
     display: block;
 }
-
 .search-filter-section {
     display: flex;
     justify-content: center;
@@ -79,26 +77,24 @@ button:disabled {
 }
 #searchBar {
     padding: 10px;
-    border: 1px solid #555; /* 입력창 테두리 */
+    border: 1px solid #555;
     border-radius: 5px;
     font-size: 16px;
     flex-grow: 1;
-    max-width: 400px; /* 검색창 길이 유지 */
-    background-color: #3a3f47; /* 입력창 배경 */
-    color: #e0e0e0; /* 입력창 글씨 */
+    max-width: 400px;
+    background-color: #3a3f47;
+    color: #e0e0e0;
 }
 #categoryFilter, #difficultyFilter {
     padding: 10px;
-    border: 1px solid #555; /* 입력창 테두리 */
+    border: 1px solid #555;
     border-radius: 5px;
     font-size: 16px;
-    background-color: #3a3f47; /* 입력창 배경 */
-    color: #e0e0e0; /* 입력창 글씨 */
+    background-color: #3a3f47;
+    color: #e0e0e0;
     cursor: pointer;
-    width: 140px; /* 가로 길이 10px 증가 (130px -> 140px) */
+    width: 140px;
 }
-
-/* --- 노래목록 최신화 버튼 스타일 --- */
 #refreshButton {
     width: 60px;
     height: 36px;
@@ -107,59 +103,49 @@ button:disabled {
     justify-content: center;
     align-items: center;
 }
-
-/* --- @keyframes spin 정의는 유지 (다른 곳에서 사용될 수도 있으므로) --- */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
 #refreshStatusIcon {
-    font-size: 20px; /* 아이콘 크기 */
-    display: inline-block; /* 회전을 위해 필요 */
-    vertical-align: middle; /* 아이콘 수직 정렬 조정 */
-    transform-origin: center center; /* 회전 중심을 명확히 중앙으로 설정 */
+    font-size: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    transform-origin: center center;
 }
-
-/* --- spinning-icon 클래스 정의 자체를 제거 (이제 필요 없음) --- */
-
 .song-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 20px;
-    border: 1px solid #333; /* 노래 목록 컨테이너 테두리 */
+    border: 1px solid #333;
     padding: 20px;
     max-height: 600px;
     overflow-y: auto;
-    background-color: #22252b; /* 노래 목록 컨테이너 배경 */
+    background-color: #22252b;
     border-radius: 5px;
 }
-
-/* --- 스크롤바 스타일 --- */
 .song-list::-webkit-scrollbar {
-    width: 10px; /* 스크롤바 너비 */
+    width: 10px;
 }
 .song-list::-webkit-scrollbar-track {
-    background: #3a3f47; /* 스크롤바 배경 (어두운색) */
+    background: #3a3f47;
     border-radius: 5px;
 }
 .song-list::-webkit-scrollbar-thumb {
-    background: #b0b0b0; /* 스크롤바 자체 (밝은 회색) */
+    background: #b0b0b0;
     border-radius: 5px;
 }
-/* Firefox 스크롤바 스타일 (기본 색상만) */
 .song-list {
-  scrollbar-color: #b0b0b0 #3a3f47; /* thumb track */
+  scrollbar-color: #b0b0b0 #3a3f47;
   scrollbar-width: thin;
 }
-
 .song-entry {
-    background-color: #2e3238; /* 노래 카드 배경 */
-    border: 1px solid #444; /* 노래 카드 테두리 */
+    background-color: #2e3238;
+    border: 1px solid #444;
     border-radius: 8px;
     padding: 10px;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* 노래 카드 그림자 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -168,9 +154,8 @@ button:disabled {
 }
 .song-entry:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* 호버 시 그림자 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-
 .song-entry img.album-cover {
     width: 100%;
     height: auto;
@@ -179,7 +164,6 @@ button:disabled {
     border-radius: 4px;
     margin-bottom: 8px;
 }
-
 .song-title, .artist-name {
     width: 100%;
     overflow: hidden;
@@ -187,12 +171,10 @@ button:disabled {
     text-overflow: ellipsis;
     position: relative;
 }
-
 .song-title-text, .artist-name-text {
     display: inline-block;
     animation-name: none;
 }
-
 .song-entry:hover .song-title.overflowing-text .song-title-text,
 .song-entry:hover .artist-name.overflowing-text .artist-name-text {
     animation-name: marquee;
@@ -200,28 +182,25 @@ button:disabled {
     animation-iteration-count: infinite;
     animation-duration: 8s;
 }
-
 @keyframes marquee {
     0% { transform: translateX(0); }
     100% { transform: translateX(calc(-100% - 10px)); }
 }
-
 .song-title {
     font-weight: bold;
     font-size: 0.95em;
-    color: #f0f0f0; /* 노래 제목 글씨 */
+    color: #f0f0f0;
     margin-bottom: 4px;
 }
 .artist-name {
     font-size: 0.85em;
-    color: #b0b0b0; /* 가수 이름 글씨 */
+    color: #b0b0b0;
     margin-bottom: 4px;
 }
 .difficulty-rating {
     font-size: 1.1em;
-    color: #FF69B4; /* 별 색상 (핫핑크 계열) */
+    color: #FF69B4;
 }
-
 .number-input-section {
     display: flex;
     gap: 10px;
@@ -245,7 +224,6 @@ button:disabled {
     -webkit-appearance: none;
     margin: 0;
 }
-
 .song-display {
     text-align: center;
     font-size: 1.2em;
@@ -253,26 +231,40 @@ button:disabled {
     margin-top: 20px;
     padding: 10px;
     border: 1px dashed #555;
-    background-color: #3a3f47; /* 랜덤 노래방 결과 배경 */
+    background-color: #3a3f47;
     color: #e0e0e0;
     border-radius: 5px;
 }
 .youtube-player {
     text-align: center;
     margin-top: 20px;
+    /* --- 수정된 부분: 랜덤 노래방 결과 표시를 위한 스타일 --- */
+    display: flex; /* Flexbox 사용하여 내부 요소를 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
+    min-height: 250px; /* 결과가 없을 때도 공간 유지 */
 }
-.youtube-player iframe {
+.youtube-player p { /* "노래를 찾을 수 없습니다" 메시지 스타일 */
+    margin: auto; /* 중앙 정렬 */
+}
+/* --- youtube-player 내 song-entry 스타일 (노래 목록과 동일하게) --- */
+.youtube-player .song-entry {
+    width: 150px; /* 노래 목록의 minmax(150px, 1fr)와 유사하게 고정 */
+    flex-shrink: 0; /* 줄어들지 않도록 */
+}
+
+.youtube-player iframe { /* 이 iframe은 이제 사용되지 않으므로 사실상 의미 없음 */
     width: 1300px;
     height: 731.25px;
     display: block;
     margin: 0 auto;
 }
-.play-button {
+.play-button { /* 이 버튼은 이제 랜덤 노래방에서 사용되지 않음 */
     padding: 5px 8px;
     font-size: 1.1em;
     line-height: 1;
     margin-left: 10px;
-    background-color: #FF1493; /* 핫핑크 계열 */
+    background-color: #FF1493;
     color: #282c34;
     border-radius: 3px;
     cursor: pointer;
@@ -280,7 +272,7 @@ button:disabled {
     flex-shrink: 0;
 }
 .play-button:hover {
-    background-color: #C71585; /* 핫핑크 계열 호버 */
+    background-color: #C71585;
 }
 
 .modal-overlay {
@@ -289,7 +281,7 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* 더 어두운 오버레이 */
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -297,10 +289,10 @@ button:disabled {
 }
 
 .modal-content {
-    background-color: #2e3238; /* 모달 배경 */
+    background-color: #2e3238;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* 모달 그림자 */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     position: relative;
     max-width: 90%;
     max-height: 90%;
@@ -311,7 +303,7 @@ button:disabled {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #5a6268; /* 닫기 버튼 배경 (진한 회색) */
+    background-color: #5a6268;
     color: white;
     border: none;
     border-radius: 50%;
@@ -328,7 +320,7 @@ button:disabled {
 }
 
 .modal-content .close-button:hover {
-    background-color: #494e54; /* 닫기 버튼 호버 (더 진한 회색) */
+    background-color: #494e54;
     color: white;
 }
 
