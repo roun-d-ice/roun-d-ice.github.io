@@ -34,10 +34,10 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
-            // A열부터 D열까지 (artist, title, youtubeUrl, albumCoverUrl 순서라고 가정)
+            // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, difficulty 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
-                range: `${sheetName}!A:D`, // A:D로 범위 확장
+                range: `${sheetName}!A:E`, // A:E로 범위 확장
             });
 
             const values = response.result.values;
@@ -49,7 +49,8 @@ async function loadSongsFromGoogleSheet() {
                         song[header] = row[index];
                     });
                     if (!song.youtubeurl) song.youtubeurl = '';
-                    if (!song.albumcoverurl) song.albumcoverurl = ''; // albumCoverUrl 추가
+                    if (!song.albumcoverurl) song.albumcoverurl = '';
+                    if (!song.difficulty) song.difficulty = ''; // difficulty 추가
                     // 각 노래에 카테고리 정보 추가
                     let category = '';
                     if (sheetName === 'a') category = 'K-POP';
@@ -136,12 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
+    const difficultyFilter = document.getElementById('difficultyFilter'); // 난이도 필터 추가
 
     if (searchBar) {
         searchBar.addEventListener('input', renderSongList);
     }
     if (categoryFilter) {
         categoryFilter.addEventListener('change', renderSongList);
+    }
+    if (difficultyFilter) { // 난이도 필터 이벤트 리스너 추가
+        difficultyFilter.addEventListener('change', renderSongList);
     }
 });
 
@@ -152,25 +157,45 @@ function extractYoutubeId(url) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
+// 별점 문자열 생성 함수
+function getStarRating(rating) {
+    const fullStar = '★';
+    const emptyStar = '☆';
+    const maxRating = 5;
+
+    let stars = '';
+    for (let i = 0; i < maxRating; i++) {
+        stars += (i < rating) ? fullStar : emptyStar;
+    }
+    return stars;
+}
+
+
 // 노래 목록을 필터링하고 표시하는 함수 (이전 displayCategorizedSongs 역할)
 function renderSongList() {
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
+    const difficultyFilter = document.getElementById('difficultyFilter'); // 난이도 필터 요소
     const songListContainer = document.getElementById('combined-song-list');
 
     if (!songListContainer) return;
 
     const searchTerm = searchBar ? searchBar.value.toLowerCase() : '';
     const selectedCategory = categoryFilter ? categoryFilter.value : '전체';
+    const selectedDifficulty = difficultyFilter ? difficultyFilter.value : '전체'; // 선택된 난이도
 
     let filteredSongs = allLoadedSongs.filter(song => {
         const categoryMatch = selectedCategory === '전체' || song.category === selectedCategory;
+
+        // 난이도 필터링
+        const difficultyMatch = selectedDifficulty === '전체' ||
+                                (song.difficulty && parseInt(song.difficulty) === parseInt(selectedDifficulty));
 
         const searchMatch = searchTerm === '' ||
                             (song.title && song.title.toLowerCase().includes(searchTerm)) ||
                             (song.artist && song.artist.toLowerCase().includes(searchTerm));
 
-        return categoryMatch && searchMatch;
+        return categoryMatch && difficultyMatch && searchMatch; // 난이도 필터 조건 추가
     });
 
     filteredSongs = filteredSongs.filter(song => song.title && song.title.trim() !== '');
@@ -207,6 +232,15 @@ function renderSongList() {
         artistSpan.textContent = song.artist;
         artistDiv.appendChild(artistSpan);
         songEntryDiv.appendChild(artistDiv);
+
+        // 난이도 별점 표시
+        if (song.difficulty && parseInt(song.difficulty) >= 1 && parseInt(song.difficulty) <= 5) {
+            const difficultyDiv = document.createElement('div');
+            difficultyDiv.className = 'difficulty-rating';
+            difficultyDiv.textContent = getStarRating(parseInt(song.difficulty));
+            songEntryDiv.appendChild(difficultyDiv);
+        }
+
 
         const youtubeId = extractYoutubeId(song.youtubeurl);
         if (youtubeId) {
