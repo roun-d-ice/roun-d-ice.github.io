@@ -331,7 +331,7 @@ function findAndPlaySong() {
     const inputNumber = parseInt(songNumberInput.value);
 
     youtubePlayerDiv.innerHTML = ''; // 이전 내용 지우기
-    currentSongDisplay.textContent = ''; // 이전 메시지 지우기
+    currentSongDisplay.innerHTML = ''; // 이전 메시지 지우기 (노래 번호 표시 박스 내용 삭제)
 
     if (isNaN(inputNumber) || inputNumber <= 0) {
         currentSongDisplay.textContent = '유효한 노래 번호를 입력해주세요.';
@@ -341,9 +341,8 @@ function findAndPlaySong() {
     const song = allSongsById[inputNumber];
 
     if (song) {
-        currentSongDisplay.textContent = `${inputNumber}.`; // 노래 번호 표시
+        // currentSongDisplay.textContent = `${inputNumber}.`; // 노래 번호 표시 (이 줄을 삭제)
 
-        // 노래 카드를 생성하는 부분 (renderSongList와 동일한 구조)
         const songEntryDiv = document.createElement('div');
         songEntryDiv.className = 'song-entry'; // song-entry 클래스 유지
 
@@ -386,7 +385,6 @@ function findAndPlaySong() {
 
         youtubePlayerDiv.appendChild(songEntryDiv); // youtubePlayerDiv에 노래 카드 추가
 
-        // 마퀴 효과를 위한 오버플로우 감지 (renderSongList와 동일)
         setTimeout(() => {
             const titleTextWidth = titleSpan.offsetWidth;
             const artistTextWidth = artistSpan.offsetWidth;
