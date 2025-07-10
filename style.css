@@ -17,7 +17,6 @@ h1, h2 {
     text-align: center;
 }
 .controls {
-    /* --- 수정된 부분: Flexbox 적용 --- */
     display: flex;
     justify-content: flex-end; /* 내용을 오른쪽 끝으로 정렬 */
     margin-bottom: 20px;
@@ -40,11 +39,7 @@ button:disabled {
     color: #888; /* 비활성화 버튼 글씨색 */
     cursor: not-allowed;
 }
-#cooldownTimer {
-    margin-left: 10px;
-    color: #b0b0b0; /* 시간 글씨색 */
-    font-size: 0.9em;
-}
+/* #cooldownTimer 제거 */
 .tabs {
     display: flex;
     justify-content: center;
@@ -112,6 +107,16 @@ button:disabled {
     display: flex; /* ✔를 중앙 정렬 */
     justify-content: center;
     align-items: center;
+}
+
+/* --- 새로 추가된 스타일: 스피닝 아이콘 애니메이션 --- */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinning-icon {
+    animation: spin 1s linear infinite; /* 1초 동안 선형으로 무한 반복 */
 }
 
 .song-list {
