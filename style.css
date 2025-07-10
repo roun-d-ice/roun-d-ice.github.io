@@ -113,6 +113,7 @@ button:disabled {
     vertical-align: middle;
     transform-origin: center center;
 }
+/* spinning-icon 클래스 정의 자체를 제거 */
 .song-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -238,28 +239,25 @@ button:disabled {
 .youtube-player {
     text-align: center;
     margin-top: 20px;
-    /* --- 수정된 부분: 랜덤 노래방 결과 표시를 위한 스타일 --- */
-    display: flex; /* Flexbox 사용하여 내부 요소를 중앙 정렬 */
+    display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 250px; /* 결과가 없을 때도 공간 유지 */
+    min-height: 250px;
 }
-.youtube-player p { /* "노래를 찾을 수 없습니다" 메시지 스타일 */
-    margin: auto; /* 중앙 정렬 */
+.youtube-player p {
+    margin: auto;
 }
-/* --- youtube-player 내 song-entry 스타일 (노래 목록과 동일하게) --- */
 .youtube-player .song-entry {
-    width: 150px; /* 노래 목록의 minmax(150px, 1fr)와 유사하게 고정 */
-    flex-shrink: 0; /* 줄어들지 않도록 */
+    width: 150px;
+    flex-shrink: 0;
 }
-
-.youtube-player iframe { /* 이 iframe은 이제 사용되지 않으므로 사실상 의미 없음 */
+.youtube-player iframe {
     width: 1300px;
     height: 731.25px;
     display: block;
     margin: 0 auto;
 }
-.play-button { /* 이 버튼은 이제 랜덤 노래방에서 사용되지 않음 */
+.play-button {
     padding: 5px 8px;
     font-size: 1.1em;
     line-height: 1;
@@ -274,7 +272,6 @@ button:disabled {
 .play-button:hover {
     background-color: #C71585;
 }
-
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -287,7 +284,6 @@ button:disabled {
     align-items: center;
     z-index: 1000;
 }
-
 .modal-content {
     background-color: #2e3238;
     padding: 20px;
@@ -298,7 +294,6 @@ button:disabled {
     max-height: 90%;
     overflow: auto;
 }
-
 .modal-content .close-button {
     position: absolute;
     top: 10px;
@@ -318,12 +313,10 @@ button:disabled {
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     transition: background-color 0.2s ease, color 0.2s ease;
 }
-
 .modal-content .close-button:hover {
     background-color: #494e54;
     color: white;
 }
-
 .modal-content iframe {
     width: 1300px;
     height: 731.25px;

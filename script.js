@@ -34,7 +34,7 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
-            // A열부터 D열까지 (artist, title, youtubeUrl, albumCoverUrl 순서라고 가정)
+            // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, difficulty 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
                 range: `${sheetName}!A:E`, // A:E로 범위 확장 (difficulty 포함)
@@ -80,8 +80,8 @@ let cooldownInterval;
 async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
-        refreshStatusIcon.textContent = '⟳'; // 아이콘을 ⟳로 변경 (회전하지 않음)
-        // refreshStatusIcon.classList.remove('spinning-icon'); // 이 줄이 회전을 멈추게 합니다.
+        refreshStatusIcon.textContent = '⟳'; // 아이콘을 ⟳로 변경
+        // refreshStatusIcon.classList.remove('spinning-icon'); // CSS에서 애니메이션 제거했으므로 이 줄은 필요 없음
 
         let remainingTime = COOLDOWN_SECONDS;
 
@@ -90,10 +90,7 @@ async function refreshSongList(isInitialLoad = false) {
             if (remainingTime <= 0) {
                 clearInterval(cooldownInterval);
                 refreshButton.disabled = false;
-                refreshStatusIcon.textContent = '✔'; // 아이콘을 ✔로 복원
-                // refreshStatusIcon.classList.remove('spinning-icon'); // 이미 멈춰있으므로 제거할 필요 없음
-            } else {
-                // 남은 시간 표시 문구는 제거되므로, 버튼 텍스트는 ✔로 유지
+                refreshStatusIcon.textContent = '✔';
             }
         }, 1000);
     }
@@ -118,7 +115,6 @@ async function refreshSongList(isInitialLoad = false) {
         if (isInitialLoad) {
             refreshButton.disabled = false;
             refreshStatusIcon.textContent = '✔';
-            // refreshStatusIcon.classList.remove('spinning-icon');
         }
     }
 }
@@ -347,8 +343,9 @@ function findAndPlaySong() {
     if (song) {
         currentSongDisplay.textContent = `${inputNumber}.`; // 노래 번호 표시
 
+        // 노래 카드를 생성하는 부분 (renderSongList와 동일한 구조)
         const songEntryDiv = document.createElement('div');
-        songEntryDiv.className = 'song-entry';
+        songEntryDiv.className = 'song-entry'; // song-entry 클래스 유지
 
         const albumCoverImg = document.createElement('img');
         albumCoverImg.className = 'album-cover';
@@ -389,6 +386,7 @@ function findAndPlaySong() {
 
         youtubePlayerDiv.appendChild(songEntryDiv); // youtubePlayerDiv에 노래 카드 추가
 
+        // 마퀴 효과를 위한 오버플로우 감지 (renderSongList와 동일)
         setTimeout(() => {
             const titleTextWidth = titleSpan.offsetWidth;
             const artistTextWidth = artistSpan.offsetWidth;
