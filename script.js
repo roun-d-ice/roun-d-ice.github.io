@@ -34,6 +34,7 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
+            // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, difficulty 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
                 range: `${sheetName}!A:E`, // A:E로 범위 확장 (difficulty 포함)
@@ -49,7 +50,8 @@ async function loadSongsFromGoogleSheet() {
                     });
                     if (!song.youtubeurl) song.youtubeurl = '';
                     if (!song.albumcoverurl) song.albumcoverurl = '';
-                    if (!song.difficulty) song.difficulty = '';
+                    if (!song.difficulty) song.difficulty = ''; // difficulty 추가
+                    // 각 노래에 카테고리 정보 추가
                     let category = '';
                     if (sheetName === 'a') category = 'K-POP';
                     else if (sheetName === 'b') category = 'POP';
@@ -72,8 +74,6 @@ async function loadSongsFromGoogleSheet() {
 
 const refreshButton = document.getElementById('refreshButton');
 const refreshStatusIcon = document.getElementById('refreshStatusIcon');
-const currentSongDisplay = document.getElementById('currentSongDisplay');
-const youtubePlayerDiv = document.getElementById('youtubePlayer');
 const COOLDOWN_SECONDS = 60;
 let cooldownInterval;
 
@@ -81,6 +81,7 @@ async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
         refreshStatusIcon.textContent = '⟳'; // 아이콘을 ⟳로 변경
+        // refreshStatusIcon.classList.remove('spinning-icon'); // CSS에서 애니메이션 제거했으므로 이 줄은 필요 없음
 
         let remainingTime = COOLDOWN_SECONDS;
 
@@ -109,7 +110,7 @@ async function refreshSongList(isInitialLoad = false) {
         shuffleSongNumbers();
     } catch (error) {
         console.error("노래 목록을 불러오는 중 오류 발생:", error);
-        alert("노래 목록을 불러오는 데 실패했습니다.");
+        alert("노래 목록을 불러오는 데 실패했습니다. API 키, 스프레드시트 ID, 시트 이름, 또는 네트워크 연결을 확인해주세요.");
     } finally {
         if (isInitialLoad) {
             refreshButton.disabled = false;
@@ -140,9 +141,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const difficultyFilter = document.getElementById('difficultyFilter');
     const songNumberInput = document.getElementById('songNumberInput');
 
-    if (searchBar) searchBar.addEventListener('input', renderSongList);
-    if (categoryFilter) categoryFilter.addEventListener('change', renderSongList);
-    if (difficultyFilter) difficultyFilter.addEventListener('change', renderSongList);
+    if (searchBar) {
+        searchBar.addEventListener('input', renderSongList);
+    }
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', renderSongList);
+    }
+    if (difficultyFilter) {
+        difficultyFilter.addEventListener('change', renderSongList);
+    }
 
     if (songNumberInput) {
         songNumberInput.addEventListener('keydown', function(event) {
@@ -184,8 +191,14 @@ function renderSongList() {
 
     let filteredSongs = allLoadedSongs.filter(song => {
         const categoryMatch = selectedCategory === '전체' || song.category === selectedCategory;
-        const difficultyMatch = selectedDifficulty === '전체' || (song.difficulty && parseInt(song.difficulty) === parseInt(selectedDifficulty));
-        const searchMatch = searchTerm === '' || (song.title && song.title.toLowerCase().includes(searchTerm)) || (song.artist && song.artist.toLowerCase().includes(searchTerm));
+
+        const difficultyMatch = selectedDifficulty === '전체' ||
+                                (song.difficulty && parseInt(song.difficulty) === parseInt(selectedDifficulty));
+
+        const searchMatch = searchTerm === '' ||
+                            (song.title && song.title.toLowerCase().includes(searchTerm)) ||
+                            (song.artist && song.artist.toLowerCase().includes(searchTerm));
+
         return categoryMatch && difficultyMatch && searchMatch;
     });
 
@@ -196,12 +209,15 @@ function renderSongList() {
     filteredSongs.sort((a, b) => {
         const categoryA = categoryOrder[a.category] || 99;
         const categoryB = categoryOrder[b.category] || 99;
+
         if (categoryA < categoryB) return -1;
         if (categoryA > categoryB) return 1;
+
         const artistA = (a.artist || '').toLowerCase();
         const artistB = (b.artist || '').toLowerCase();
         if (artistA < artistB) return -1;
         if (artistA > artistB) return 1;
+
         return 0;
     });
 
@@ -277,17 +293,47 @@ function renderSongList() {
     });
 }
 
+const songNumberInput = document.getElementById('songNumberInput');
+const currentSongDisplay = document.getElementById('currentSongDisplay');
+const youtubePlayerDiv = document.getElementById('youtubePlayer');
+const totalSongsCountSpan = document.getElementById('totalSongsCount');
+
+function shuffleSongNumbers() {
+    const allSongs = [];
+    for (const sheetName of SHEET_NAMES) {
+        if (categorizedSongs[sheetName]) {
+            allSongs.push(...categorizedSongs[sheetName]);
+        }
+    }
+
+    const filteredSongs = allSongs.filter(song => song.title && song.title.trim() !== '');
+
+    if (totalSongsCountSpan) {
+        totalSongsCountSpan.textContent = `(총 ${filteredSongs.length}곡)`;
+    }
+
+    for (let i = filteredSongs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredSongs[i], filteredSongs[j]] = [filteredSongs[j], filteredSongs[i]];
+    }
+
+    allSongsById = {};
+    filteredSongs.forEach((song, index) => {
+        const songId = index + 1;
+        allSongsById[songId] = song;
+    });
+
+    currentSongDisplay.textContent = '노래 번호가 새로 부여되었습니다.';
+    youtubePlayerDiv.innerHTML = '';
+}
+
 function findAndPlaySong() {
-    youtubePlayerDiv.innerHTML = ''; // 이전 내용 지우기
-    currentSongDisplay.innerHTML = ''; // 이전 메시지 지우기
-
-    // 노래 카드 검색 결과 시 currentSongDisplay 박스 숨기기
-    currentSongDisplay.style.display = 'none';
-
     const inputNumber = parseInt(songNumberInput.value);
 
+    youtubePlayerDiv.innerHTML = ''; // 이전 내용 지우기
+    currentSongDisplay.innerHTML = ''; // 이전 메시지 지우기 (노래 번호 표시 박스 내용 삭제)
+
     if (isNaN(inputNumber) || inputNumber <= 0) {
-        currentSongDisplay.style.display = 'block'; // 오류 메시지 보여줄 때만 보임
         currentSongDisplay.textContent = '유효한 노래 번호를 입력해주세요.';
         return;
     }
@@ -295,9 +341,10 @@ function findAndPlaySong() {
     const song = allSongsById[inputNumber];
 
     if (song) {
-        // 노래 카드를 생성하는 부분 (renderSongList와 동일한 구조)
+        // currentSongDisplay.textContent = `${inputNumber}.`; // 노래 번호 표시 (이 줄을 삭제)
+
         const songEntryDiv = document.createElement('div');
-        songEntryDiv.className = 'song-entry';
+        songEntryDiv.className = 'song-entry'; // song-entry 클래스 유지
 
         const albumCoverImg = document.createElement('img');
         albumCoverImg.className = 'album-cover';
@@ -359,8 +406,7 @@ function findAndPlaySong() {
         }, 0);
 
     } else {
-        currentSongDisplay.style.display = 'block'; // 노래를 찾지 못했을 때 메시지는 이 박스에 표시
-        currentSongDisplay.textContent = '해당 번호의 노래를 찾을 수 없습니다.';
+        youtubePlayerDiv.innerHTML = '<p>해당 번호의 노래를 찾을 수 없습니다.</p>';
     }
 }
 
