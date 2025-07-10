@@ -34,10 +34,10 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
-            // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, difficulty 순서라고 가정)
+            // A열부터 D열까지 (artist, title, youtubeUrl, albumCoverUrl 순서라고 가정)
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
-                range: `${sheetName}!A:E`, // A:E로 범위 확장
+                range: `${sheetName}!A:E`, // A:E로 범위 확장 (difficulty 포함)
             });
 
             const values = response.result.values;
@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
     const difficultyFilter = document.getElementById('difficultyFilter');
+    const songNumberInput = document.getElementById('songNumberInput'); // 랜덤 노래방 입력창
 
     if (searchBar) {
         searchBar.addEventListener('input', renderSongList);
@@ -147,6 +148,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (difficultyFilter) {
         difficultyFilter.addEventListener('change', renderSongList);
+    }
+
+    // --- 랜덤 노래방 입력창 엔터 키 이벤트 ---
+    if (songNumberInput) {
+        songNumberInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') { // 'Enter' 키가 눌렸을 때
+                event.preventDefault(); // 기본 동작 (폼 제출 등) 방지
+                findAndPlaySong(); // 찾기 함수 호출
+            }
+        });
     }
 });
 
@@ -161,7 +172,7 @@ function extractYoutubeId(url) {
 function getStarRating(rating) {
     const fullStar = '★';
     let stars = '';
-    for (let i = 0; i < rating; i++) { // rating 횟수만큼만 반복
+    for (let i = 0; i < rating; i++) {
         stars += fullStar;
     }
     return stars;

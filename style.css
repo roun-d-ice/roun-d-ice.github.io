@@ -13,7 +13,7 @@ body {
     box-shadow: 0 2px 10px rgba(0,0,0,0.5); /* 그림자 진하게 */
 }
 h1, h2 {
-    color: #61dafb; /* 헤딩 색상 */
+    color: #FF69B4; /* 핫핑크 계열 */
     text-align: center;
 }
 .controls {
@@ -24,14 +24,14 @@ button {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #61dafb; /* 버튼 색상 */
+    background-color: #FF1493; /* 핫핑크 계열 */
     color: #282c34; /* 버튼 글씨색 */
     cursor: pointer;
     font-size: 16px;
     margin-left: 5px;
 }
 button:hover {
-    background-color: #21a1f1; /* 호버 시 색상 */
+    background-color: #C71585; /* 핫핑크 계열 호버 */
 }
 button:disabled {
     background-color: #444; /* 비활성화 버튼 색상 */
@@ -59,9 +59,9 @@ button:disabled {
     border-top-right-radius: 5px;
 }
 .tab-button.active {
-    background-color: #61dafb; /* 활성 탭 배경 */
+    background-color: #FF1493; /* 활성 탭 배경 (핫핑크 계열) */
     color: #282c34; /* 활성 탭 글씨 */
-    border-bottom: 3px solid #61dafb; /* 활성 탭 밑줄 */
+    border-bottom: 3px solid #FF1493; /* 활성 탭 밑줄 (핫핑크 계열) */
 }
 .tab-content {
     display: none;
@@ -80,18 +80,25 @@ button:disabled {
     margin-bottom: 20px;
     flex-wrap: wrap;
 }
-#searchBar, #categoryFilter, #difficultyFilter {
+#searchBar {
     padding: 10px;
     border: 1px solid #555; /* 입력창 테두리 */
     border-radius: 5px;
     font-size: 16px;
     flex-grow: 1;
-    max-width: 400px;
+    max-width: 400px; /* 검색창 길이 유지 */
     background-color: #3a3f47; /* 입력창 배경 */
     color: #e0e0e0; /* 입력창 글씨 */
 }
 #categoryFilter, #difficultyFilter {
+    padding: 10px;
+    border: 1px solid #555; /* 입력창 테두리 */
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #3a3f47; /* 입력창 배경 */
+    color: #e0e0e0; /* 입력창 글씨 */
     cursor: pointer;
+    width: 120px; /* 가로 길이 절반으로 줄임 (대략) */
 }
 
 .song-list {
@@ -104,6 +111,24 @@ button:disabled {
     overflow-y: auto;
     background-color: #22252b; /* 노래 목록 컨테이너 배경 */
     border-radius: 5px;
+}
+
+/* --- 스크롤바 스타일 --- */
+.song-list::-webkit-scrollbar {
+    width: 10px; /* 스크롤바 너비 */
+}
+.song-list::-webkit-scrollbar-track {
+    background: #3a3f47; /* 스크롤바 배경 (어두운색) */
+    border-radius: 5px;
+}
+.song-list::-webkit-scrollbar-thumb {
+    background: #b0b0b0; /* 스크롤바 자체 (밝은 회색) */
+    border-radius: 5px;
+}
+/* Firefox 스크롤바 스타일 (기본 색상만) */
+.song-list {
+  scrollbar-color: #b0b0b0 #3a3f47; /* thumb track */
+  scrollbar-width: thin;
 }
 
 .song-entry {
@@ -189,7 +214,18 @@ button:disabled {
     width: 150px;
     background-color: #3a3f47;
     color: #e0e0e0;
+    /* --- 랜덤 노래방 입력창 화살표 제거 --- */
+    -webkit-appearance: none; /* Chrome, Safari */
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* Standard */
 }
+/* --- 랜덤 노래방 입력창 화살표 제거 (Webkit 전용) --- */
+.number-input-section input[type="number"]::-webkit-outer-spin-button,
+.number-input-section input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .song-display {
     text-align: center;
     font-size: 1.2em;
@@ -216,7 +252,7 @@ button:disabled {
     font-size: 1.1em;
     line-height: 1;
     margin-left: 10px;
-    background-color: #61dafb; /* 재생 버튼 색상 */
+    background-color: #FF1493; /* 핫핑크 계열 */
     color: #282c34;
     border-radius: 3px;
     cursor: pointer;
@@ -224,7 +260,7 @@ button:disabled {
     flex-shrink: 0;
 }
 .play-button:hover {
-    background-color: #21a1f1;
+    background-color: #C71585; /* 핫핑크 계열 호버 */
 }
 
 /* --- 모달(팝업) 스타일 --- */
@@ -256,7 +292,7 @@ button:disabled {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #5a6268; /* 닫기 버튼 배경 */
+    background-color: #5a6268; /* 닫기 버튼 배경 (진한 회색) */
     color: white;
     border: none;
     border-radius: 50%;
@@ -273,7 +309,7 @@ button:disabled {
 }
 
 .modal-content .close-button:hover {
-    background-color: #494e54; /* 닫기 버튼 호버 */
+    background-color: #494e54; /* 닫기 버튼 호버 (더 진한 회색) */
     color: white;
 }
 
