@@ -325,26 +325,31 @@ function shuffleSongNumbers() {
 
     currentSongDisplay.textContent = '노래 번호가 새로 부여되었습니다.';
     youtubePlayerDiv.innerHTML = '';
+    currentSongDisplay.style.display = 'block'; // 노래 번호 부여 시 박스 보이게
 }
 
 function findAndPlaySong() {
     const inputNumber = parseInt(songNumberInput.value);
 
-    youtubePlayerDiv.innerHTML = ''; // 이전 내용 지우기
+    // youtubePlayerDiv와 currentSongDisplay의 이전 내용 지우기
+    youtubePlayerDiv.innerHTML = '';
     currentSongDisplay.innerHTML = ''; // 이전 메시지 지우기 (노래 번호 표시 박스 내용 삭제)
+
+    // currentSongDisplay를 기본적으로 숨김
+    currentSongDisplay.style.display = 'none'; // 추가: 박스 숨기기
 
     if (isNaN(inputNumber) || inputNumber <= 0) {
         currentSongDisplay.textContent = '유효한 노래 번호를 입력해주세요.';
+        currentSongDisplay.style.display = 'block'; // 유효하지 않은 경우 박스 다시 보이게
         return;
     }
 
     const song = allSongsById[inputNumber];
 
     if (song) {
-        // currentSongDisplay.textContent = `${inputNumber}.`; // 노래 번호 표시 (이 줄을 삭제)
-
+        // 노래 카드를 생성하여 youtubePlayerDiv에 추가하는 기존 로직
         const songEntryDiv = document.createElement('div');
-        songEntryDiv.className = 'song-entry'; // song-entry 클래스 유지
+        songEntryDiv.className = 'song-entry'; 
 
         const albumCoverImg = document.createElement('img');
         albumCoverImg.className = 'album-cover';
@@ -407,6 +412,7 @@ function findAndPlaySong() {
 
     } else {
         youtubePlayerDiv.innerHTML = '<p>해당 번호의 노래를 찾을 수 없습니다.</p>';
+        currentSongDisplay.style.display = 'block'; // 노래를 찾지 못한 경우 박스 다시 보이게
     }
 }
 
