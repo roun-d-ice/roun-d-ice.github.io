@@ -169,7 +169,7 @@ function extractYoutubeId(url) {
 
 // 별점 문자열 생성 함수 (채워진 별만 표시)
 function getStarRating(rating) {
-    const fullStar = '⭐'; // 별 이모지로 변경
+    const fullStar = '💗'; // 별 이모지를 하트 이모지로 변경
     let stars = '';
     for (let i = 0; i < rating; i++) {
         stars += fullStar;
