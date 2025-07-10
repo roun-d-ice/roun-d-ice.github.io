@@ -73,28 +73,26 @@ async function loadSongsFromGoogleSheet() {
 }
 
 const refreshButton = document.getElementById('refreshButton');
+const refreshStatusIcon = document.getElementById('refreshStatusIcon'); // 새로 추가된 아이콘 span
 const COOLDOWN_SECONDS = 60;
 let cooldownInterval;
 
 async function refreshSongList(isInitialLoad = false) {
     if (!isInitialLoad) {
         refreshButton.disabled = true;
-        // 버튼 텍스트를 스피닝 아이콘으로 변경하고 클래스 추가
-        refreshButton.textContent = '⟳'; // 유니코드 회전 화살표
-        refreshButton.classList.add('spinning-icon');
+        refreshStatusIcon.textContent = '⟳'; // 아이콘을 회전 화살표로 변경
+        refreshStatusIcon.classList.add('spinning-icon'); // 회전 클래스 추가
 
         let remainingTime = COOLDOWN_SECONDS;
         // 남은 시간 표시 문구는 제거되므로, 버튼 텍스트는 ✔로 유지
-        // refreshButton.textContent = `(${remainingTime}초 후 재사용 가능)`; // 이전 코드
 
         cooldownInterval = setInterval(() => {
             remainingTime--;
             if (remainingTime <= 0) {
                 clearInterval(cooldownInterval);
                 refreshButton.disabled = false;
-                // 쿨다운 종료 시 원래 ✔ 텍스트로 복원하고 클래스 제거
-                refreshButton.textContent = '✔';
-                refreshButton.classList.remove('spinning-icon');
+                refreshStatusIcon.textContent = '✔'; // 아이콘을 ✔로 복원
+                refreshStatusIcon.classList.remove('spinning-icon'); // 회전 클래스 제거
             } else {
                 // 남은 시간 표시 문구는 제거되므로, 버튼 텍스트는 ✔로 유지
             }
@@ -120,8 +118,8 @@ async function refreshSongList(isInitialLoad = false) {
     } finally {
         if (isInitialLoad) {
             refreshButton.disabled = false;
-            refreshButton.textContent = '✔'; // 초기 로드 시 텍스트 복원 (✔)
-            refreshButton.classList.remove('spinning-icon'); // 초기 로드 시 클래스 제거
+            refreshStatusIcon.textContent = '✔'; // 초기 로드 시 아이콘을 ✔로 복원
+            refreshStatusIcon.classList.remove('spinning-icon'); // 초기 로드 시 회전 클래스 제거
         }
     }
 }

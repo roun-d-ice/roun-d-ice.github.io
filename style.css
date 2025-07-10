@@ -98,21 +98,25 @@ button:disabled {
     width: 140px; /* 가로 길이 10px 증가 (130px -> 140px) */
 }
 
-/* --- 노래목록 최신화 버튼 스타일 (수정) --- */
+/* --- 노래목록 최신화 버튼 스타일 --- */
 #refreshButton {
-    width: 60px;  /* 기존 120px에서 절반인 60px로 줄임 */
-    height: 36px; /* 높이는 유지 */
-    font-size: 20px; /* ✔ 이모지가 잘 보이도록 폰트 크기 키움 */
-    padding: 0; /* 패딩 제거 (✔가 버튼 중앙에 오도록) */
-    display: flex; /* ✔를 중앙 정렬 */
+    width: 60px;
+    height: 36px;
+    padding: 0;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* --- 새로 추가된 스타일: 스피닝 아이콘 애니메이션 --- */
+/* --- 새로 추가된 스타일: 아이콘 회전 애니메이션 --- */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+#refreshStatusIcon {
+    font-size: 20px; /* 아이콘 크기 */
+    display: inline-block; /* 회전을 위해 필요 */
 }
 
 .spinning-icon {
