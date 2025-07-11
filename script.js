@@ -234,11 +234,17 @@ function renderSongList() {
         const songEntryDiv = document.createElement('div');
         songEntryDiv.className = 'song-entry';
 
+        // 앨범 커버를 감싸는 div 생성
+        const albumCoverWrapper = document.createElement('div');
+        albumCoverWrapper.className = 'album-cover-wrapper';
+
         const albumCoverImg = document.createElement('img');
         albumCoverImg.className = 'album-cover';
         albumCoverImg.src = song.albumcoverurl || 'https://via.placeholder.com/150?text=No+Cover';
         albumCoverImg.alt = `${song.title} 앨범 자켓`;
-        songEntryDiv.appendChild(albumCoverImg);
+        
+        albumCoverWrapper.appendChild(albumCoverImg); // 이미지를 래퍼에 추가
+        songEntryDiv.appendChild(albumCoverWrapper); // 래퍼를 노래 항목에 추가
 
         const titleDiv = document.createElement('div');
         titleDiv.className = 'song-title';
@@ -353,11 +359,17 @@ function findAndPlaySong() {
         const songEntryDiv = document.createElement('div');
         songEntryDiv.className = 'song-entry'; 
 
+        // 앨범 커버를 감싸는 div 생성
+        const albumCoverWrapper = document.createElement('div');
+        albumCoverWrapper.className = 'album-cover-wrapper';
+
         const albumCoverImg = document.createElement('img');
         albumCoverImg.className = 'album-cover';
         albumCoverImg.src = song.albumcoverurl || 'https://via.placeholder.com/150?text=No+Cover';
         albumCoverImg.alt = `${song.title} 앨범 자켓`;
-        songEntryDiv.appendChild(albumCoverImg);
+        
+        albumCoverWrapper.appendChild(albumCoverImg); // 이미지를 래퍼에 추가
+        songEntryDiv.appendChild(albumCoverWrapper); // 래퍼를 노래 항목에 추가
 
         const titleDiv = document.createElement('div');
         titleDiv.className = 'song-title';

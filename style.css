@@ -157,14 +157,28 @@ button:disabled {
     transform: translateY(-5px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-.song-entry img.album-cover {
+
+/* 앨범 커버를 감싸는 새로운 div 스타일 */
+.album-cover-wrapper {
     width: 100%;
-    height: auto; /* 이미지의 원래 비율에 따라 높이 자동 조절 */
-    /* aspect-ratio: 1 / 1; 제거 */
-    /* object-fit: cover; 제거 */
-    border-radius: 4px;
-    margin-bottom: 8px;
+    aspect-ratio: 1 / 1; /* 정사각형 비율 유지 */
+    background-color: #000; /* 빈 여백을 검정색으로 채움 */
+    display: flex; /* 이미지를 중앙에 배치하기 위함 */
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px; /* 래퍼에 둥근 모서리 적용 */
+    margin-bottom: 8px; /* 래퍼 아래 여백 */
+    overflow: hidden; /* 혹시 모를 오버플로우 방지 */
 }
+
+/* 래퍼 안의 앨범 이미지 스타일 */
+.album-cover-wrapper .album-cover {
+    max-width: 100%; /* 래퍼 너비에 맞춰 크기 조절 */
+    max-height: 100%; /* 래퍼 높이에 맞춰 크기 조절 */
+    object-fit: contain; /* 이미지 비율 유지하며 잘림 없이 표시, 남는 공간은 배경색으로 채움 */
+    /* border-radius와 margin-bottom은 이제 래퍼에 적용되므로 이미지에서는 제거 */
+}
+
 .song-title, .artist-name {
     width: 100%;
     overflow: hidden;
