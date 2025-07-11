@@ -161,11 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function extractYoutubeId(url) {
-    if (!url || typeof url !== 'string') return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+// 새 탭에서 URL 열기 함수
+function openInNewTab(url) {
+    if (url && url.trim() !== '') {
+        window.open(url, '_blank');
+    } else {
+        alert('연결할 URL이 없습니다.');
+    }
 }
 
 function getStarRating(rating) {
@@ -261,10 +263,10 @@ function renderSongList() {
             songEntryDiv.appendChild(difficultyDiv);
         }
 
-        const youtubeId = extractYoutubeId(song.youtubeurl);
-        if (youtubeId) {
+        // 유튜브 URL이 존재하면 클릭 가능하게 하고 새 탭에서 열기
+        if (song.youtubeurl && song.youtubeurl.trim() !== '') {
             songEntryDiv.style.cursor = 'pointer';
-            songEntryDiv.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
+            songEntryDiv.onclick = () => openInNewTab(song.youtubeurl);
         } else {
             songEntryDiv.style.cursor = 'default';
         }
@@ -380,10 +382,10 @@ function findAndPlaySong() {
             songEntryDiv.appendChild(difficultyDiv);
         }
 
-        const youtubeId = extractYoutubeId(song.youtubeurl);
-        if (youtubeId) {
+        // 유튜브 URL이 존재하면 클릭 가능하게 하고 새 탭에서 열기
+        if (song.youtubeurl && song.youtubeurl.trim() !== '') {
             songEntryDiv.style.cursor = 'pointer';
-            songEntryDiv.onclick = () => openYoutubePopup(song.youtubeurl, `${song.artist} - ${song.title}`);
+            songEntryDiv.onclick = () => openInNewTab(song.youtubeurl);
         } else {
             songEntryDiv.style.cursor = 'default';
         }
@@ -414,46 +416,4 @@ function findAndPlaySong() {
         youtubePlayerDiv.innerHTML = '<p>해당 번호의 노래를 찾을 수 없습니다.</p>';
         currentSongDisplay.style.display = 'block'; // 노래를 찾지 못한 경우 박스 다시 보이게
     }
-}
-
-function openYoutubePopup(youtubeUrl, songInfo) {
-    const existingModal = document.querySelector('.modal-overlay');
-    if (existingModal) {
-        existingModal.remove();
-    }
-
-    const youtubeId = extractYoutubeId(youtubeUrl);
-    if (!youtubeId) {
-        alert('유효한 YouTube URL이 아닙니다.');
-        return;
-    }
-
-    const modalOverlay = document.createElement('div');
-    modalOverlay.className = 'modal-overlay';
-
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-
-    const closeButton = document.createElement('button');
-    closeButton.className = 'close-button';
-    closeButton.innerHTML = '&times;';
-    closeButton.onclick = () => {
-        modalOverlay.remove();
-        document.body.style.overflow = '';
-    };
-
-    const youtubeIframe = document.createElement('iframe');
-    youtubeIframe.setAttribute('src', `https://www.youtube.com/embed/${youtubeId}?autoplay=1`);
-    youtubeIframe.setAttribute('frameborder', '0');
-    youtubeIframe.setAttribute('allow', 'autoplay; encrypted-media');
-    youtubeIframe.setAttribute('allowfullscreen', 'true');
-    youtubeIframe.setAttribute('title', songInfo);
-
-    modalContent.appendChild(closeButton);
-    modalContent.appendChild(youtubeIframe);
-
-    modalOverlay.appendChild(modalContent);
-    document.body.appendChild(modalOverlay);
-
-    document.body.style.overflow = 'hidden';
 }
