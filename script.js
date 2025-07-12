@@ -34,10 +34,11 @@ async function loadSongsFromGoogleSheet() {
     const fetchedData = {};
     for (const sheetName of SHEET_NAMES) {
         try {
-            // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, difficulty 순서라고 가정)
+            // A열부터 E열까지 (artist, title, youtubeUrl, albumCoverUrl, proficiency 순서라고 가정)
+            // 구글 시트의 해당 열 이름을 'proficiency'로 변경해야 합니다.
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
-                range: `${sheetName}!A:E`, // A:E로 범위 확장 (difficulty 포함)
+                range: `${sheetName}!A:E`, // A:E로 범위 확장 (proficiency 포함)
             });
 
             const values = response.result.values;
@@ -50,7 +51,7 @@ async function loadSongsFromGoogleSheet() {
                     });
                     if (!song.youtubeurl) song.youtubeurl = '';
                     if (!song.albumcoverurl) song.albumcoverurl = '';
-                    if (!song.difficulty) song.difficulty = ''; // difficulty 추가
+                    if (!song.proficiency) song.proficiency = ''; // difficulty -> proficiency 변경
                     // 각 노래에 카테고리 정보 추가
                     let category = '';
                     if (sheetName === 'a') category = 'K-POP';
@@ -138,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
-    const difficultyFilter = document.getElementById('difficultyFilter');
+    const proficiencyFilter = document.getElementById('proficiencyFilter'); // difficultyFilter -> proficiencyFilter 변경
     const songNumberInput = document.getElementById('songNumberInput');
 
     if (searchBar) {
@@ -147,8 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (categoryFilter) {
         categoryFilter.addEventListener('change', renderSongList);
     }
-    if (difficultyFilter) {
-        difficultyFilter.addEventListener('change', renderSongList);
+    if (proficiencyFilter) { // difficultyFilter -> proficiencyFilter 변경
+        proficiencyFilter.addEventListener('change', renderSongList);
     }
 
     if (songNumberInput) {
@@ -182,26 +183,26 @@ function getStarRating(rating) {
 function renderSongList() {
     const searchBar = document.getElementById('searchBar');
     const categoryFilter = document.getElementById('categoryFilter');
-    const difficultyFilter = document.getElementById('difficultyFilter');
+    const proficiencyFilter = document.getElementById('proficiencyFilter'); // difficultyFilter -> proficiencyFilter 변경
     const songListContainer = document.getElementById('combined-song-list');
 
     if (!songListContainer) return;
 
     const searchTerm = searchBar ? searchBar.value.toLowerCase() : '';
     const selectedCategory = categoryFilter ? categoryFilter.value : '전체';
-    const selectedDifficulty = difficultyFilter ? difficultyFilter.value : '전체';
+    const selectedProficiency = proficiencyFilter ? proficiencyFilter.value : '전체'; // selectedDifficulty -> selectedProficiency 변경
 
     let filteredSongs = allLoadedSongs.filter(song => {
         const categoryMatch = selectedCategory === '전체' || song.category === selectedCategory;
 
-        const difficultyMatch = selectedDifficulty === '전체' ||
-                                (song.difficulty && parseInt(song.difficulty) === parseInt(selectedDifficulty));
+        const proficiencyMatch = selectedProficiency === '전체' || // difficultyMatch -> proficiencyMatch 변경
+                                (song.proficiency && parseInt(song.proficiency) === parseInt(selectedProficiency)); // song.difficulty -> song.proficiency 변경
 
         const searchMatch = searchTerm === '' ||
                             (song.title && song.title.toLowerCase().includes(searchTerm)) ||
                             (song.artist && song.artist.toLowerCase().includes(searchTerm));
 
-        return categoryMatch && difficultyMatch && searchMatch;
+        return categoryMatch && proficiencyMatch && searchMatch; // difficultyMatch -> proficiencyMatch 변경
     });
 
     filteredSongs = filteredSongs.filter(song => song.title && song.title.trim() !== '');
@@ -262,11 +263,11 @@ function renderSongList() {
         artistDiv.appendChild(artistSpan);
         songEntryDiv.appendChild(artistDiv);
 
-        if (song.difficulty && parseInt(song.difficulty) >= 1 && parseInt(song.difficulty) <= 5) {
-            const difficultyDiv = document.createElement('div');
-            difficultyDiv.className = 'difficulty-rating';
-            difficultyDiv.textContent = getStarRating(parseInt(song.difficulty));
-            songEntryDiv.appendChild(difficultyDiv);
+        if (song.proficiency && parseInt(song.proficiency) >= 1 && parseInt(song.proficiency) <= 5) { // song.difficulty -> song.proficiency 변경
+            const proficiencyDiv = document.createElement('div'); // difficultyDiv -> proficiencyDiv 변경
+            proficiencyDiv.className = 'proficiency-rating'; // difficulty-rating -> proficiency-rating 변경
+            proficiencyDiv.textContent = getStarRating(parseInt(song.proficiency)); // song.difficulty -> song.proficiency 변경
+            songEntryDiv.appendChild(proficiencyDiv); // difficultyDiv -> proficiencyDiv 변경
         }
 
         // 유튜브 URL이 존재하면 클릭 가능하게 하고 새 탭에서 열기
@@ -387,11 +388,11 @@ function findAndPlaySong() {
         artistDiv.appendChild(artistSpan);
         songEntryDiv.appendChild(artistDiv);
 
-        if (song.difficulty && parseInt(song.difficulty) >= 1 && parseInt(song.difficulty) <= 5) {
-            const difficultyDiv = document.createElement('div');
-            difficultyDiv.className = 'difficulty-rating';
-            difficultyDiv.textContent = getStarRating(parseInt(song.difficulty));
-            songEntryDiv.appendChild(difficultyDiv);
+        if (song.proficiency && parseInt(song.proficiency) >= 1 && parseInt(song.proficiency) <= 5) { // song.difficulty -> song.proficiency 변경
+            const proficiencyDiv = document.createElement('div'); // difficultyDiv -> proficiencyDiv 변경
+            proficiencyDiv.className = 'proficiency-rating'; // difficulty-rating -> proficiency-rating 변경
+            proficiencyDiv.textContent = getStarRating(parseInt(song.proficiency)); // song.difficulty -> song.proficiency 변경
+            songEntryDiv.appendChild(proficiencyDiv); // difficultyDiv -> proficiencyDiv 변경
         }
 
         // 유튜브 URL이 존재하면 클릭 가능하게 하고 새 탭에서 열기

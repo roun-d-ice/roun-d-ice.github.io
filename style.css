@@ -85,7 +85,7 @@ button:disabled {
     background-color: #3a3f47;
     color: #e0e0e0;
 }
-#categoryFilter, #difficultyFilter {
+#categoryFilter, #proficiencyFilter { /* #difficultyFilter -> #proficiencyFilter 변경 */
     padding: 10px;
     border: 1px solid #555;
     border-radius: 5px;
@@ -212,7 +212,7 @@ button:disabled {
     color: #b0b0b0;
     margin-bottom: 4px;
 }
-.difficulty-rating {
+.proficiency-rating { /* .difficulty-rating -> .proficiency-rating 변경 */
     font-size: 1.1em;
     color: #FF69B4;
 }
